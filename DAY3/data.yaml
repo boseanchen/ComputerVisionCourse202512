@@ -1,0 +1,25 @@
+# YOLOv11 硬幣檢測資料集配置
+# ProjectCOIN Dataset
+
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 10
+names: ['0', '10h', '10t', '1h', '1t', '50h', '50t', '5h', '5t', 'test']
+
+# 類別說明:
+# 0: 無效/背景
+# 1h/1t: 1元硬幣 (正面h/反面t)
+# 5h/5t: 5元硬幣 (正面h/反面t)
+# 10h/10t: 10元硬幣 (正面h/反面t)
+# 50h/50t: 50元硬幣 (正面h/反面t)
+# test: 測試用類別
+
+# 資料來源
+roboflow:
+  workspace: aicourse-dvibo
+  project: projectcoin
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/aicourse-dvibo/projectcoin/dataset/1
