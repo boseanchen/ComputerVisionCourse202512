@@ -27,7 +27,7 @@ import random
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ============== 設定區 ==============
-BATCH_SIZE = 16          # 批次大小
+BATCH_SIZE = 32          # 批次大小
 EPOCHS = 20              # 訓練輪數
 LEARNING_RATE = 0.001    # 學習率
 IMAGE_SIZE = 224         # 統一影像大小

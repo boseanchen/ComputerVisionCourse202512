@@ -69,3 +69,10 @@ processed_result.jpg
 # ============== Logs ==============
 *.log
 logs/
+
+# ============== YOLO 資料集 (避免佔用 GitHub 空間) ==============
+*.zip
+**/train/
+**/valid/
+**/test/
+runs/
