@@ -1,0 +1,3618 @@
+╭─ Claude Code ────────────────────────────────────────────────╮
+│                                                              │
+│                       Welcome back Su!                       │
+│                                                              │
+│                                                              │
+│                          * ▐▛███▜▌ *                         │
+│                         * ▝▜█████▛▘ *                        │
+│                          *  ▘▘ ▝▝  *                         │
+│                                                              │
+│                                                              │
+│                           Opus 4.5                           │
+│                          Claude Max                          │
+│       D:\AWORKSPACE\Github\ComputerVisionCourse202512        │
+│                                                              │
+╰──────────────────────────────────────────────────────────────╯
+
+> 我資料夾裡面有一個.zip的yolo dataset
+幫我加入到gitignore避免占空間 然後幫我在DAY3資料夾裡面，將最
+外層的yolov11.zip解壓縮到DAY3裡面，他式yolov11的訓練資料集，
+在裡面創建YOLOv11的訓練程序，跟說明文檔。
+
+● 我來幫你完成這些任務。首先讓我了解一下目前的目錄結構。
+
+● Search(pattern: "**/*.zip")
+  ⎿  Found 1 file (ctrl+o to expand)
+
+● Search(pattern: "DAY3/**/*")
+  ⎿  Found 0 files
+
+● Read(.gitignore)
+  ⎿  Read 72 lines
+
+● Bash(ls -la "D:\AWORKSPACE\Github\ComputerVisionCourse202512")
+  ⎿  total 3701
+     drwxr-xr-x 1 user 197121       0 十二月 17 13:38 .
+     drwxr-xr-x 1 user 197121       0 十二月 12 13:05 ..
+     … +21 lines (ctrl+o to expand)
+
+● Update(.gitignore)
+  ⎿  Added 7 lines
+       69    # ============== Logs ==============
+       70    *.log
+       71    logs/
+       72 +
+       73 +  # ============== YOLO 資料集 (避免佔用
+          + GitHub 空間) ==============
+       74 +  *.zip
+       75 +  **/train/
+       76 +  **/valid/
+       77 +  **/test/
+       78 +  runs/
+
+● Bash(powershell -Command "Expand-Archive -Path
+      'D:\AWORKSPACE\Github\ComputerVisionCourse202512\ProjectCO
+      IN.v1i.yolov11.zip' -DestinationPath
+      'D:\AWORKSPACE\Github\C…)
+  ⎿ . : File C:\Users\user\Documents\WindowsPowerShell\prof
+    ile.ps1 cannot be loaded because running scripts is dis
+    abled on
+    … +11 lines (ctrl+o to expand)
+
+
+
+● 讓我用另一種方式解壓縮。
+
+● Bash(cd "D:\AWORKSPACE\Github\ComputerVisionCourse202512" &&
+      python -c "import zipfile;
+      zipfile.ZipFile('ProjectCOIN.v1i.yolov11.zip',
+      'r').extractall('DAY3')")
+  ⎿  (No content)
+
+● Bash(ls -la
+      "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY3")
+  ⎿  total 10
+     drwxr-xr-x 1 user 197121    0 十二月 17 13:41 .
+     drwxr-xr-x 1 user 197121    0 十二月 17 13:41 ..
+     … +8 lines (ctrl+o to expand)
+
+● Read(DAY3\data.yaml)
+  ⎿  Read 13 lines
+
+● Bash(ls "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY3\
+      train\images" | wc -l && ls "D:\AWORKSPACE\Github\Computer
+      VisionCourse202512\DAY3\valid\images" | wc -l…)
+  ⎿  120
+     6
+     6
+
+● 現在我了解了資料集結構。這是一個硬幣檢測資料集，有 10 個類別。讓我修正 data.yaml 的路徑並創建訓練程序。
+
+● Write(DAY3\data.yaml)
+  ⎿  Added 16 lines, removed 4 lines
+        1 -  train: ../train/images
+        2 -  val: ../valid/images
+        3 -  test: ../test/images
+        1 +  # YOLOv11 硬幣檢測資料集配置
+        2 +  # ProjectCOIN Dataset
+        3
+        4 +  train: train/images
+        5 +  val: valid/images
+        6 +  test: test/images
+        7 +
+        8    nc: 10
+        9    names: ['0', '10h', '10t', '1h', '1t',
+            '50h', '50t', '5h', '5t', 'test']
+       10
+       11 +  # 類別說明:
+       12 +  # 0: 無效/背景
+       13 +  # 1h/1t: 1元硬幣 (正面h/反面t)
+       14 +  # 5h/5t: 5元硬幣 (正面h/反面t)
+       15 +  # 10h/10t: 10元硬幣 (正面h/反面t)
+       16 +  # 50h/50t: 50元硬幣 (正面h/反面t)
+       17 +  # test: 測試用類別
+       18 +
+       19 +  # 資料來源
+       20    roboflow:
+       21      workspace: aicourse-dvibo
+       22      project: projectcoin
+       23      version: 1
+       24      license: CC BY 4.0
+       25 -    url: https://universe.roboflow.com/aicours
+          - e-dvibo/projectcoin/dataset/1
+       25   \ No newline at end of file
+       26 +    url: https://universe.roboflow.com/aicours
+          + e-dvibo/projectcoin/dataset/1
+
+● Write(DAY3\train_yolov11.py)
+  ⎿  Wrote 1 lines to DAY3\train_yolov11.py
+     """
+     YOLOv11 硬幣檢測模型訓練腳本
+     Project COIN - 台幣硬幣檢測與辨識
+     作者: AI Course
+     日期: 2024
+     """
+     from ultralytics import YOLO
+     import os
+
+● Write(DAY3\inference.py)
+  ⎿  Wrote 1 lines to DAY3\inference.py
+     """
+     YOLOv11 硬幣檢測即時推理腳本
+     支援攝影機即時偵測與單張圖片預測
+     作者: AI Course
+     日期: 2024
+     """
+     from ultralytics import YOLO
+     import cv2
+
+● Write(DAY3\README.md)
+  ⎿  Wrote 1 lines to DAY3\README.md
+     # DAY3 - YOLOv11 硬幣檢測
+     使用 YOLOv11 訓練台幣硬幣檢測模型，可辨識 1、5、10、50
+     元硬幣的正反面。
+     ## 資料集結構
+     ```
+     DAY3/
+     ├── data.yaml          # 資料集配置檔
+     ├── train/             # 訓練集 (120 張)
+
+
+● Bash(ls -la
+      "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY3")
+  ⎿  total 34
+     drwxr-xr-x 1 user 197121    0 十二月 17 13:44 .
+     drwxr-xr-x 1 user 197121    0 十二月 17 13:41 ..
+     … +13 lines (ctrl+o to expand)
+
+● 所有任務已完成。以下是完成的工作:
+
+  完成項目
+
+  1. 更新 .gitignore
+  - 添加了 *.zip 忽略所有 zip 檔案
+  - 添加了 **/train/, **/valid/, **/test/ 忽略 YOLO 資料集
+  - 添加了 runs/ 忽略訓練輸出
+
+  2. 解壓縮資料集到 DAY3
+  - 資料集: ProjectCOIN (台幣硬幣檢測)
+  - 訓練集: 120 張圖片
+  - 驗證集: 6 張圖片
+  - 測試集: 6 張圖片
+  - 10 個類別: 1/5/10/50 元硬幣的正反面
+
+  3. 創建的檔案
+
+  | 檔案             | 說明                                          |
+  |------------------|-----------------------------------------------|
+  | train_yolov11.py | 訓練腳本 (支援 train/val/predict/export 模式) |
+  | inference.py     | 即時推理腳本 (攝影機/圖片/影片)               |
+  | README.md        | 完整說明文檔                                  |
+  | data.yaml        | 修正路徑後的資料集配置                        |
+
+  使用方式
+
+  # 訓練模型
+  cd DAY3
+  python train_yolov11.py
+
+  # 即時攝影機偵測
+  python inference.py --model runs/detect/coin_detector/weights/best.pt --source 0
+
+> 你可以在裡面多一個GPU版本的確認&環境確認的py code
+
+● Write(DAY3\check_environment.py)
+  ⎿  Wrote 1 lines to DAY3\check_environment.py
+     """
+     YOLOv11 環境檢查腳本
+     檢查 GPU、CUDA、PyTorch 及相關套件是否正確安裝
+     作者: AI Course
+     日期: 2024
+     """
+     import sys
+     import platform
+
+● Update(DAY3\README.md)
+  ⎿  Added 19 lines
+       40    pip install opencv-python
+       41    ```
+       42
+       43 +  ## 環境檢查
+       44 +
+       45 +  在開始訓練前，建議先執行環境檢查腳本:
+       46 +
+       47 +  ```bash
+       48 +  python check_environment.py
+       49 +  ```
+       50 +
+       51 +  此腳本會檢查:
+       52 +  - Python 版本
+       53 +  - PyTorch 安裝與版本
+       54 +  - CUDA/GPU 可用性
+       55 +  - GPU 記憶體狀態
+       56 +  - Ultralytics (YOLOv11) 安裝
+       57 +  - OpenCV 安裝
+       58 +  - 其他相關套件
+       59 +
+       60 +  並提供 batch size 建議與訓練指令。
+       61 +
+       62    ## 訓練模型
+       63
+       64    ### 基本訓練
+
+● Bash(ls -la
+      "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY3" &&
+      echo "---" && wc -l "D:\AWORKSPACE\Github\ComputerVisionCo
+      urse202512\DAY3\check_environment.py")
+  ⎿  total 46
+     drwxr-xr-x 1 user 197121     0 十二月 17 13:46 .
+     drwxr-xr-x 1 user 197121     0 十二月 17 13:41 ..
+     … +20 lines (ctrl+o to expand)
+
+● 已新增 check_environment.py。這個腳本會檢查:
+
+  檢查項目:
+  - Python 版本與路徑
+  - PyTorch 安裝與版本
+  - CUDA 可用性與版本
+  - cuDNN 版本
+  - GPU 數量與型號
+  - GPU 記憶體 (總量/已用/可用)
+  - Ultralytics (YOLOv11) 安裝
+  - OpenCV 安裝與 CUDA 支援
+  - 其他套件 (numpy, PIL, matplotlib 等)
+  - nvidia-smi 輸出
+  - YOLO 模型載入測試 (可選)
+
+  使用方式:
+  cd DAY3
+  python check_environment.py
+
+  輸出範例:
+  ============================================================
+   PyTorch 環境
+  ============================================================
+  [OK] PyTorch 版本: 2.1.0
+  [OK] CUDA 可用: 是
+  [OK] CUDA 版本: 11.8
+  [OK] GPU 數量: 1
+  [OK]   GPU 0: NVIDIA GeForce RTX 3060 (12.0 GB)
+
+  ============================================================
+   GPU 記憶體狀態
+  ============================================================
+  GPU 0: NVIDIA GeForce RTX 3060
+    總記憶體:    12.00 GB
+    可用:        11.50 GB
+    建議 batch:  batch_size=32 或更高
+
+> 接下來幫我寫一隻程式用ctk寫一個 有一個btn可以讓我select pt
+ file path 然後loading model近來可以選擇圖片/影片/web
+cam去show model result出來
+
+● Write(DAY3\yolo_gui.py)
+  ⎿  Wrote 1 lines to DAY3\yolo_gui.py
+     """
+     YOLOv11 硬幣檢測 GUI 應用程式
+     使用 CustomTkinter 建立現代化介面
+     作者: AI Course
+     日期: 2024
+     """
+     import customtkinter as ctk
+     from tkinter import filedialog, messagebox
+
+● Update(DAY3\README.md)
+  ⎿  Added 9 lines, removed 7 lines
+        6
+        7    ```
+        8    DAY3/
+        9 -  ├── data.yaml          # 資料集配置檔
+       10 -  ├── train/             # 訓練集 (120 張)
+        9 +  ├── data.yaml            # 資料集配置檔
+       10 +  ├── train/               # 訓練集 (120 張)
+       11    │   ├── images/
+       12    │   └── labels/
+       13 -  ├── valid/             # 驗證集 (6 張)
+       13 +  ├── valid/               # 驗證集 (6 張)
+       14    │   ├── images/
+       15    │   └── labels/
+       16 -  ├── test/              # 測試集 (6 張)
+       16 +  ├── test/                # 測試集 (6 張)
+       17    │   ├── images/
+       18    │   └── labels/
+       19 -  ├── train_yolov11.py   # 訓練腳本
+       20 -  ├── inference.py       # 推理腳本
+       21 -  └── README.md          # 說明文檔
+       19 +  ├── train_yolov11.py     # 訓練腳本
+       20 +  ├── inference.py         # 命令列推理腳本
+       21 +  ├── yolo_gui.py          # GUI 圖形介面應用
+       22 +  ├── check_environment.py # 環境檢查工具
+       23 +  └── README.md            # 說明文檔
+       24    ```
+       25
+       26    ## 類別說明
+
+● Update(DAY3\README.md)
+  ⎿  Added 3 lines
+       40
+       41    # 安裝 OpenCV (推理需要)
+       42    pip install opencv-python
+       43 +
+       44 +  # 安裝 CustomTkinter (GUI 需要)
+       45 +  pip install customtkinter
+       46    ```
+       47
+       48    ## 環境檢查
+
+● Update(DAY3\README.md)
+  ⎿  Added 25 lines
+       127    python inference.py --model best.pt
+             --source 0 --conf 0.5
+       128    ```
+       129
+       130 +  ## GUI 圖形介面
+       131 +
+       132 +  提供現代化的圖形介面，方便操作:
+       133 +
+       134 +  ```bash
+       135 +  python yolo_gui.py
+       136 +  ```
+       137 +
+       138 +  ### 功能特色:
+       139 +  - 選擇並載入 .pt 模型檔案
+       140 +  - 支援圖片、影片、攝影機三種輸入來源
+       141 +  - 即時調整信心閾值
+       142 +  - 自動計算偵測到的硬幣總金額
+       143 +  - 不同面額硬幣以不同顏色標示
+       144 +  - 深色主題現代化介面
+       145 +
+       146 +  ### 使用步驟:
+       147 +  1. 點擊「選擇模型檔案」載入訓練好的 .pt
+           + 模型
+       148 +  2. 選擇輸入來源:
+       149 +     - 📷 選擇圖片: 偵測單張圖片
+       150 +     - 🎬 選擇影片: 偵測影片檔案
+       151 +     - 📹 開啟攝影機: 即時攝影機偵測
+       152 +  3. 調整信心閾值滑桿以優化偵測結果
+       153 +  4. 查看右側面板的偵測結果與總金額
+       154 +
+       155    ## 驗證模型
+       156
+       157    ```bash
+
+● Bash(ls -la
+      "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY3")
+  ⎿  total 70
+     drwxr-xr-x 1 user 197121     0 十二月 17 15:50 .
+     drwxr-xr-x 1 user 197121     0 十二月 17 13:52 ..
+     … +19 lines (ctrl+o to expand)
+
+● 已創建 yolo_gui.py GUI 應用程式。
+
+  GUI 功能
+
+  左側控制面板:
+  - 選擇模型檔案 (.pt) 按鈕
+  - 模型載入狀態指示燈
+  - 信心閾值滑桿 (0.1 - 0.9)
+  - 圖片 / 影片 / 攝影機 選擇按鈕
+  - 停止按鈕
+  - 偵測結果文字框
+  - 總金額顯示
+
+  右側顯示區:
+  - 即時顯示偵測結果影像
+  - 不同硬幣以不同顏色標示:
+    - 50 元: 金色
+    - 10 元: 銀色
+    - 5 元: 橙色
+    - 1 元: 綠色
+
+  使用方式
+
+  cd DAY3
+
+  # 安裝 CustomTkinter (如果沒有)
+  pip install customtkinter
+
+  # 啟動 GUI
+  python yolo_gui.py
+
+  DAY3 完整檔案列表
+
+  | 檔案                 | 大小    | 說明         |
+  |----------------------|---------|--------------|
+  | train_yolov11.py     | 6.5 KB  | 訓練腳本     |
+  | inference.py         | 7.3 KB  | 命令列推理   |
+  | yolo_gui.py          | 16.8 KB | GUI 圖形介面 |
+  | check_environment.py | 10.3 KB | 環境檢查工具 |
+  | data.yaml            | 0.6 KB  | 資料集配置   |
+  | README.md            | 4.8 KB  | 說明文檔     |
+
+> 框框不要式白色的因為我背景是白的 會看不清楚 loading
+model時應該與GUI刷新解偶 不然GUI會卡死
+
+● Read(DAY3\yolo_gui.py)
+  ⎿  Read 537 lines
+
+● 我來修改這兩個問題：1) 邊框顏色改成深色 2) 模型載入放到獨立線程。
+
+● Update(DAY3\yolo_gui.py)
+  ⎿  Added 38 lines, removed 14 lines
+       234                self.load_model(file_path)
+       235
+       236        def load_model(self, model_path):
+       237 -          """載入 YOLO 模型"""
+       237 +          """載入 YOLO 模型
+     (在獨立線程中執行)"""
+       238 +          # 更新 UI 狀態
+       239 +          self.model_status.configure(text="●
+           +  載入中...", text_color="yellow")
+       240 +          self.select_model_btn.configure(sta
+           + te="disabled")
+       241 +
+       242 +          # 儲存路徑供線程使用
+       243 +          self._loading_model_path =
+           + model_path
+       244 +
+       245 +          # 在獨立線程中載入模型
+       246 +          thread = threading.Thread(target=se
+           + lf._load_model_thread, daemon=True)
+       247 +          thread.start()
+       248 +
+       249 +      def _load_model_thread(self):
+       250 +          """在獨立線程中載入模型"""
+       251            try:
+       252                from ultralytics import YOLO
+       253
+       254 -
+           - self.model_status.configure(text="●
+           - 載入中...", text_color="yellow")
+       255 -              self.update()
+       254 +              model_path =
+           + self._loading_model_path
+       255 +              model = YOLO(model_path)
+       256
+       257 -              self.model = YOLO(model_path)
+       258 -              self.model_path.set(os.path.bas
+           - ename(model_path))
+       257 +              # 回到主線程更新 UI
+       258 +              self.after(0, lambda:
+           + self._on_model_loaded(model, model_path))
+       259
+       260 -
+           - self.model_status.configure(text="●
+           - 模型已載入", text_color="green")
+       260 +          except Exception as e:
+       261 +              # 回到主線程處理錯誤
+       262 +              self.after(0, lambda:
+           + self._on_model_load_error(str(e)))
+       263
+       264 -              # 啟用按鈕
+       265 -
+           - self.image_btn.configure(state="normal")
+       266 -
+           - self.video_btn.configure(state="normal")
+       267 -
+           - self.webcam_btn.configure(state="normal")
+       264 +      def _on_model_loaded(self, model,
+           + model_path):
+       265 +          """模型載入成功的回調
+           + (在主線程執行)"""
+       266 +          self.model = model
+       267 +          self.model_path.set(os.path.basenam
+           + e(model_path))
+       268 +          self.model_status.configure(text="●
+           +  模型已載入", text_color="green")
+       269 +          self.select_model_btn.configure(sta
+           + te="normal")
+       270
+       271 -              messagebox.showinfo("成功",
+           - f"模型載入成功!\n{model_path}")
+       271 +          # 啟用按鈕
+       272 +
+           + self.image_btn.configure(state="normal")
+       273 +
+           + self.video_btn.configure(state="normal")
+       274 +
+           + self.webcam_btn.configure(state="normal")
+       275
+       276 -          except Exception as e:
+       277 -
+           - self.model_status.configure(text="●
+           - 載入失敗", text_color="red")
+       278 -              messagebox.showerror("錯誤",
+           - f"模型載入失敗:\n{e}")
+       276 +          messagebox.showinfo("成功",
+           + f"模型載入成功!\n{model_path}")
+       277
+       278 +      def _on_model_load_error(self,
+           + error_msg):
+       279 +          """模型載入失敗的回調
+           + (在主線程執行)"""
+       280 +          self.model_status.configure(text="●
+           +  載入失敗", text_color="red")
+       281 +          self.select_model_btn.configure(sta
+           + te="normal")
+       282 +          messagebox.showerror("錯誤",
+           + f"模型載入失敗:\n{error_msg}")
+       283 +
+       284        def select_image(self):
+       285            """選擇並處理圖片"""
+       286            file_path =
+             filedialog.askopenfilename(
+
+● 現在修改邊框顏色，改成深色以便在白色背景上看清楚。
+
+● Update(DAY3\yolo_gui.py)
+  ⎿  Added 16 lines, removed 9 lines
+       439
+       440
+             detected_coins.append(class_name)
+       441
+       442 -                  # 根據硬幣類型選擇顏色
+       442 +                  # 根據硬幣類型選擇顏色
+           +   (BGR 格式，深色以便在白色背景上看清)
+       443                    if
+             class_name.startswith('50'):
+       444 -                      color = (0, 215, 255)
+           -  # 金色
+       444 +                      color = (0, 140, 255)
+           +         # 深橙色 (50元)
+       445 +                      text_color = (255, 255,
+           +  255)  # 白色文字
+       446                    elif
+             class_name.startswith('10'):
+       447 -                      color = (192, 192, 192)
+           -    # 銀色
+       447 +                      color = (139, 69, 19)
+           +         # 深棕色 (10元)
+       448 +                      text_color = (255, 255,
+           +  255)
+       449                    elif
+             class_name.startswith('5'):
+       450 -                      color = (0, 165, 255)
+           -  # 橙色
+       450 +                      color = (0, 100, 0)
+           +           # 深綠色 (5元)
+       451 +                      text_color = (255, 255,
+           +  255)
+       452                    elif
+             class_name.startswith('1'):
+       453 -                      color = (0, 255, 0)  #
+           -  綠色
+       453 +                      color = (139, 0, 0)
+           +           # 深藍色 (1元)
+       454 +                      text_color = (255, 255,
+           +  255)
+       455                    else:
+       456 -                      color = (255, 0, 0)  #
+           -  藍色
+       456 +                      color = (128, 0, 128)
+           +         # 紫色 (其他)
+       457 +                      text_color = (255, 255,
+           +  255)
+       458
+       459 -                  # 繪製邊界框
+       460 -
+           -  cv2.rectangle(annotated_frame, (x1, y1),
+           -  (x2, y2), color, 3)
+       459 +                  # 繪製邊界框 (加粗)
+       460 +
+           +  cv2.rectangle(annotated_frame, (x1, y1),
+           +  (x2, y2), color, 4)
+       461
+       462                    # 繪製標籤
+       463                    value =
+             COIN_VALUES.get(class_name, 0)
+     ...
+       463                    (label_w, label_h), _ =
+             cv2.getTextSize(
+       464                        label,
+             cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2
+       465                    )
+       466 +                  # 標籤背景
+       467                    cv2.rectangle(
+       468                        annotated_frame,
+       469                        (x1, y1 - label_h -
+             10),
+       470                        (x1 + label_w + 10,
+             y1),
+       471                        color, -1
+       472                    )
+       473 +                  # 標籤文字
+       474                    cv2.putText(
+       475                        annotated_frame, label,
+       476                        (x1 + 5, y1 - 5),
+       477 -
+           -  cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2
+       477 +
+           +  cv2.FONT_HERSHEY_SIMPLEX, 0.7, text_color,
+           +  2
+       478                    )
+       479
+       480            # 顯示總金額
+
+> .pt檔案加入.gitignore
+並檢查change在git想一下那些不該上去的就別上去了
+
+● 現在修改總金額的顯示顏色，也改成深色。
+
+● Update(DAY3\yolo_gui.py)
+  ⎿  Added 6 lines, removed 2 lines
+       482
+             cv2.FONT_HERSHEY_SIMPLEX, 0.7, text_color, 2
+       483                    )
+       484
+       485 -          # 顯示總金額
+       485 +          # 顯示總金額
+     (深紅色，白色背景上清晰可見)
+       486            if detected_coins:
+       487                total = sum(COIN_VALUES.get(c,
+             0) for c in detected_coins)
+       488                total_text = f"Total: ${total}"
+       489 +              # 先畫深色背景
+       490 +              (tw, th), _ =
+           + cv2.getTextSize(total_text,
+           + cv2.FONT_HERSHEY_SIMPLEX, 1.5, 3)
+       491 +              cv2.rectangle(annotated_frame,
+           + (5, 10), (tw + 20, th + 25), (0, 0, 139),
+           + -1)
+       492 +              # 再畫白色文字
+       493                cv2.putText(
+       494                    annotated_frame,
+             total_text,
+       495                    (10, 50),
+       496 -                  cv2.FONT_HERSHEY_SIMPLEX,
+           -  1.5, (0, 0, 255), 3
+       496 +                  cv2.FONT_HERSHEY_SIMPLEX,
+           +  1.5, (255, 255, 255), 3
+       497                )
+       498
+       499            return annotated_frame,
+             detected_coins
+
+● GUI 修改完成。現在來處理 .gitignore 並檢查 git 狀態。
+
+● Read(.gitignore)
+  ⎿  Read 79 lines
+
+● Bash(cd "D:\AWORKSPACE\Github\ComputerVisionCourse202512" &&
+      git status)
+  ⎿  On branch Homework
+     Your branch is up to date with 'origin/Homework'.
+     … +14 lines (ctrl+o to expand)
+
+● .gitignore 已經有 *.pt（第55行）。讓我檢查一下所有變更。
+
+● Bash(cd "D:\AWORKSPACE\Github\ComputerVisionCourse202512" &&
+      git status -u)
+  ⎿  On branch Homework
+     Your branch is up to date with 'origin/Homework'.
+     … +14 lines (ctrl+o to expand)
+
+● Bash(cd "D:\AWORKSPACE\Github\ComputerVisionCourse202512" &&
+      git check-ignore -v ProjectCOIN.v1i.yolov11.zip DAY3/train
+       DAY3/valid DAY3/test 2>/dev/null || echo "Fil…)
+  ⎿  .gitignore:74:*.zip        ProjectCOIN.v1i.yolov11.zip
+     .gitignore:75:**/train/    DAY3/train
+     .gitignore:76:**/valid/    DAY3/valid
+     .gitignore:77:**/test/     DAY3/test
+
+● .gitignore 運作正常，以下檔案已被忽略：
+
+  | 規則      | 忽略的檔案                  |
+  |-----------|-----------------------------|
+  | *.zip     | ProjectCOIN.v1i.yolov11.zip |
+  | **/train/ | DAY3/train                  |
+  | **/valid/ | DAY3/valid                  |
+  | **/test/  | DAY3/test                   |
+  | *.pt      | 所有 .pt 模型檔             |
+  | runs/     | 訓練輸出目錄                |
+
+  修改摘要
+
+  GUI 修復:
+  1. 模型載入改為獨立線程執行，GUI 不會卡死
+  2. 邊框顏色改為深色（深橙/深棕/深綠/深藍），白色背景清晰可見
+  3. 標籤文字改為白色，配合深色背景
+  4. 總金額顯示加上深色背景框
+
+  目前需要提交的檔案:
+  - DAY3/README.md (modified)
+  - DAY3/yolo_gui.py (new)
+
+  這些都是程式碼檔案，應該要上傳。資料集和模型檔案都已被 gitignore 正確忽略。
+
+> 接下來多增加 總金額跟 硬幣種類&數量的統計dashboard在UI上
+
+● Read(DAY3\yolo_gui.py)
+  ⎿  Read 50 lines
+
+● 讓我重新設計偵測結果區，加入完整的統計 dashboard。
+
+● Update(DAY3\yolo_gui.py)
+  ⎿  Added 2 lines, removed 25 lines
+       181            )
+       182            self.stop_btn.pack(fill="x",
+             padx=10, pady=(15, 10))
+       183
+       184 -          # ----- 偵測結果區 -----
+       185 -          result_section =
+           - ctk.CTkFrame(self.control_frame)
+       186 -          result_section.pack(fill="x",
+           - padx=10, pady=10)
+       184 +          # ----- 統計 Dashboard -----
+       185 +          self.create_dashboard()
+       186
+       187 -          ctk.CTkLabel(
+       188 -              result_section,
+       189 -              text="偵測結果",
+       190 -              font=ctk.CTkFont(size=14,
+           - weight="bold")
+       191 -          ).pack(pady=(10, 5))
+       192 -
+       193 -          self.result_text = ctk.CTkTextbox(
+       194 -              result_section,
+       195 -              height=150,
+       196 -              font=ctk.CTkFont(size=12)
+       197 -          )
+       198 -          self.result_text.pack(fill="x",
+           - padx=10, pady=(5, 10))
+       199 -
+       200 -          # 總金額顯示
+       201 -          self.total_label = ctk.CTkLabel(
+       202 -              result_section,
+       203 -              text="總金額: $0",
+       204 -              font=ctk.CTkFont(size=18,
+           - weight="bold"),
+       205 -              text_color="green"
+       206 -          )
+       207 -          self.total_label.pack(pady=(0, 10))
+       208 -
+       187            # ===== 右側顯示區 =====
+       188            self.display_frame =
+             ctk.CTkFrame(self)
+       189
+             self.display_frame.pack(side="right",
+             fill="both", expand=True, padx=10, pady=10)
+
+● Update(DAY3\yolo_gui.py)
+  ⎿  Added 131 lines
+       196            )
+       197            self.image_label.pack(expand=True,
+             fill="both")
+       198
+       199 +      def create_dashboard(self):
+       200 +          """建立統計 Dashboard"""
+       201 +          # Dashboard 主框架
+       202 +          dashboard_frame =
+           + ctk.CTkFrame(self.control_frame)
+       203 +          dashboard_frame.pack(fill="both",
+           + expand=True, padx=10, pady=10)
+       204 +
+       205 +          # 標題
+       206 +          ctk.CTkLabel(
+       207 +              dashboard_frame,
+       208 +              text="統計 Dashboard",
+       209 +              font=ctk.CTkFont(size=14,
+           + weight="bold")
+       210 +          ).pack(pady=(10, 5))
+       211 +
+       212 +          # 硬幣統計區
+       213 +          stats_frame =
+           + ctk.CTkFrame(dashboard_frame,
+           + fg_color="transparent")
+       214 +          stats_frame.pack(fill="x", padx=5,
+           + pady=5)
+       215 +
+       216 +          # 定義硬幣類型和顏色
+       217 +          self.coin_types = [
+       218 +              ("50元", ["50h", "50t"],
+           + "#FF8C00"),   # 深橙色
+       219 +              ("10元", ["10h", "10t"],
+           + "#8B4513"),   # 深棕色
+       220 +              ("5元", ["5h", "5t"],
+           + "#006400"),      # 深綠色
+       221 +              ("1元", ["1h", "1t"],
+           + "#00008B"),      # 深藍色
+       222 +          ]
+       223 +
+       224 +          # 儲存統計標籤的字典
+       225 +          self.coin_labels = {}
+       226 +
+       227 +          # 表頭
+       228 +          header_frame =
+           + ctk.CTkFrame(stats_frame, fg_color="gray25")
+       229 +          header_frame.pack(fill="x",
+           + pady=(0, 2))
+       230 +
+       231 +          ctk.CTkLabel(header_frame,
+           + text="硬幣", width=60,
+           + font=ctk.CTkFont(size=11,
+           + weight="bold")).pack(side="left", padx=5,
+           + pady=3)
+       232 +          ctk.CTkLabel(header_frame,
+           + text="數量", width=50,
+           + font=ctk.CTkFont(size=11,
+           + weight="bold")).pack(side="left", padx=5,
+           + pady=3)
+       233 +          ctk.CTkLabel(header_frame,
+           + text="小計", width=70,
+           + font=ctk.CTkFont(size=11,
+           + weight="bold")).pack(side="left", padx=5,
+           + pady=3)
+       234 +
+       235 +          # 每種硬幣的統計行
+       236 +          for coin_name, coin_classes, color
+           + in self.coin_types:
+       237 +              row_frame =
+           + ctk.CTkFrame(stats_frame, fg_color="gray20")
+       238 +              row_frame.pack(fill="x",
+           + pady=1)
+       239 +
+       240 +              # 顏色指示方塊 + 硬幣名稱
+       241 +              name_frame =
+           + ctk.CTkFrame(row_frame,
+           + fg_color="transparent")
+       242 +              name_frame.pack(side="left",
+           + padx=5, pady=3)
+       243 +
+       244 +              color_box = ctk.CTkLabel(
+       245 +                  name_frame,
+       246 +                  text="■",
+       247 +                  text_color=color,
+       248 +                  font=ctk.CTkFont(size=14),
+       249 +                  width=15
+       250 +              )
+       251 +              color_box.pack(side="left")
+       252 +
+       253 +              ctk.CTkLabel(
+       254 +                  name_frame,
+       255 +                  text=coin_name,
+       256 +                  font=ctk.CTkFont(size=12),
+       257 +                  width=45
+       258 +              ).pack(side="left")
+       259 +
+       260 +              # 數量
+       261 +              count_label = ctk.CTkLabel(
+       262 +                  row_frame,
+       263 +                  text="0",
+       264 +                  font=ctk.CTkFont(size=12),
+       265 +                  width=50
+       266 +              )
+       267 +              count_label.pack(side="left",
+           + padx=5, pady=3)
+       268 +
+       269 +              # 小計
+       270 +              subtotal_label = ctk.CTkLabel(
+       271 +                  row_frame,
+       272 +                  text="$0",
+       273 +                  font=ctk.CTkFont(size=12),
+       274 +                  width=70
+       275 +              )
+       276 +
+           + subtotal_label.pack(side="left", padx=5,
+           + pady=3)
+       277 +
+       278 +              # 儲存標籤引用
+       279 +              self.coin_labels[coin_name] = {
+       280 +                  "classes": coin_classes,
+       281 +                  "count": count_label,
+       282 +                  "subtotal": subtotal_label,
+       283 +                  "value":
+           + int(coin_name.replace("元", ""))
+       284 +              }
+       285 +
+       286 +          # 分隔線
+       287 +          separator =
+           + ctk.CTkFrame(dashboard_frame, height=2,
+           + fg_color="gray50")
+       288 +          separator.pack(fill="x", padx=10,
+           + pady=10)
+       289 +
+       290 +          # 總計區
+       291 +          total_frame =
+           + ctk.CTkFrame(dashboard_frame,
+           + fg_color="gray25", corner_radius=10)
+       292 +          total_frame.pack(fill="x", padx=5,
+           + pady=5)
+       293 +
+       294 +          # 總數量
+       295 +          total_count_frame =
+           + ctk.CTkFrame(total_frame,
+           + fg_color="transparent")
+       296 +          total_count_frame.pack(fill="x",
+           + padx=10, pady=5)
+       297 +
+       298 +          ctk.CTkLabel(
+       299 +              total_count_frame,
+       300 +              text="硬幣總數:",
+       301 +              font=ctk.CTkFont(size=13)
+       302 +          ).pack(side="left")
+       303 +
+       304 +          self.total_count_label =
+           + ctk.CTkLabel(
+       305 +              total_count_frame,
+       306 +              text="0 枚",
+       307 +              font=ctk.CTkFont(size=13,
+           + weight="bold"),
+       308 +              text_color="#00BFFF"
+       309 +          )
+       310 +
+           + self.total_count_label.pack(side="right")
+       311 +
+       312 +          # 總金額 (大字顯示)
+       313 +          self.total_label = ctk.CTkLabel(
+       314 +              total_frame,
+       315 +              text="$0",
+       316 +              font=ctk.CTkFont(size=36,
+           + weight="bold"),
+       317 +              text_color="#00FF7F"
+       318 +          )
+       319 +          self.total_label.pack(pady=(5, 10))
+       320 +
+       321 +          # 即時狀態
+       322 +          self.status_label = ctk.CTkLabel(
+       323 +              dashboard_frame,
+       324 +              text="等待偵測...",
+       325 +              font=ctk.CTkFont(size=11),
+       326 +              text_color="gray60"
+       327 +          )
+       328 +          self.status_label.pack(pady=(5,
+           + 10))
+       329 +
+       330        def update_conf_label(self, value):
+       331            """更新信心閾值標籤"""
+       332
+             self.conf_label.configure(text=f"閾值:
+             {value:.2f}")
+
+● 現在更新 update_detection_results 方法來更新新的 dashboard。
+
+● Search(pattern: "def update_detection_results", path:
+        "DAY3\yolo_gui.py", output_mode: "content")
+  ⎿  Found 31 lines (ctrl+o to expand)
+
+● Update(DAY3\yolo_gui.py)
+  ⎿  Added 46 lines, removed 15 lines
+       631            self.image_label.image = photo
+       632
+       633        def update_detection_results(self,
+             coins):
+       634 -          """更新偵測結果顯示"""
+       634 +          """更新偵測結果顯示 (Dashboard)"""
+       635            # 統計各類硬幣數量
+       636            coin_counts = {}
+       637            for coin in coins:
+       638                coin_counts[coin] =
+             coin_counts.get(coin, 0) + 1
+       639
+       640 -          # 更新文字框
+       641 -          self.result_text.delete("1.0",
+           - "end")
+       642 -          if coin_counts:
+       643 -              for coin, count in
+           - sorted(coin_counts.items()):
+       644 -                  value =
+           - COIN_VALUES.get(coin, 0)
+       645 -
+           - self.result_text.insert("end", f"{coin}:
+           - {count} 個")
+       646 -                  if value > 0:
+       647 -
+           - self.result_text.insert("end", f" (${value *
+           -  count})")
+       648 -
+           - self.result_text.insert("end", "\n")
+       649 -          else:
+       650 -              self.result_text.insert("end",
+           - "未偵測到硬幣")
+       640 +          # 更新每種硬幣的統計
+       641 +          total_coins = 0
+       642 +          total_amount = 0
+       643
+       644 -          # 計算總金額
+       645 -          total = sum(COIN_VALUES.get(c, 0)
+           - for c in coins)
+       646 -
+           - self.total_label.configure(text=f"總金額:
+           - ${total}")
+       644 +          for coin_name, info in
+           + self.coin_labels.items():
+       645 +              # 計算該面額的硬幣數量
+       646 +              count = 0
+       647 +              for cls in info["classes"]:
+       648 +                  count +=
+           + coin_counts.get(cls, 0)
+       649
+       650 +              # 計算小計
+       651 +              value = info["value"]
+       652 +              subtotal = count * value
+       653 +
+       654 +              # 更新標籤
+       655 +
+           + info["count"].configure(text=str(count))
+       656 +              info["subtotal"].configure(text
+           + =f"${subtotal}")
+       657 +
+       658 +              # 如果有偵測到，高亮顯示
+       659 +              if count > 0:
+       660 +                  info["count"].configure(tex
+           + t_color="#00FF7F")
+       661 +                  info["subtotal"].configure(
+           + text_color="#00FF7F")
+       662 +              else:
+       663 +
+           + info["count"].configure(text_color="gray70")
+       664 +                  info["subtotal"].configure(
+           + text_color="gray70")
+       665 +
+       666 +              total_coins += count
+       667 +              total_amount += subtotal
+       668 +
+       669 +          # 更新總數量
+       670 +          self.total_count_label.configure(te
+           + xt=f"{total_coins} 枚")
+       671 +
+       672 +          # 更新總金額
+       673 +          self.total_label.configure(text=f"$
+           + {total_amount}")
+       674 +
+       675 +          # 更新狀態
+       676 +          if total_coins > 0:
+       677 +              self.status_label.configure(
+       678 +                  text=f"偵測中... 發現
+           + {total_coins} 枚硬幣",
+       679 +                  text_color="#00FF7F"
+       680 +              )
+       681 +          else:
+       682 +              self.status_label.configure(
+       683 +                  text="偵測中...
+           + 未發現硬幣",
+       684 +                  text_color="gray60"
+       685 +              )
+       686 +
+       687        def stop_detection(self):
+       688            """停止偵測"""
+       689            self.is_running = False
+
+● 現在更新停止偵測時重置 dashboard 狀態。
+
+● Update(DAY3\yolo_gui.py)
+  ⎿  Added 1 line
+       692                self.cap = None
+       693            self.webcam_btn.configure(text="📹
+             開啟攝影機")
+       694
+             self.stop_btn.configure(state="disabled")
+       695 +          self.status_label.configure(text="
+           + 等待偵測...", text_color="gray60")
+       696
+       697        def on_closing(self):
+       698            """關閉視窗時的處理"""
+
+● 讓我確認一下檔案沒有問題。
+
+● Bash(cd "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY3"
+       && python -m py_compile yolo_gui.py && echo "Syntax OK")
+  ⎿  Syntax OK
+
+● Bash(wc -l "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DA
+      Y3\yolo_gui.py")
+  ⎿ 711 D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY
+    3\yolo_gui.py
+
+
+● 已完成 Dashboard 更新。
+
+  新增功能
+
+  統計 Dashboard 面板:
+  ┌─────────────────────────────┐
+  │     統計 Dashboard          │
+  ├─────────────────────────────┤
+  │ 硬幣    數量    小計         │
+  ├─────────────────────────────┤
+  │ ■ 50元   0      $0          │
+  │ ■ 10元   0      $0          │
+  │ ■ 5元    0      $0          │
+  │ ■ 1元    0      $0          │
+  ├─────────────────────────────┤
+  │ 硬幣總數:           0 枚     │
+  │         $0                  │
+  │                             │
+  │     等待偵測...              │
+  └─────────────────────────────┘
+
+  功能特色:
+  - 每種硬幣顯示顏色標識 (與邊框顏色對應)
+  - 即時顯示每種硬幣的數量與小計金額
+  - 偵測到硬幣時，數字會變成綠色高亮
+  - 大字顯示總金額 (36pt 亮綠色)
+  - 底部顯示即時狀態訊息
+
+  修改摘要:
+  1. 移除舊的文字框 result_text
+  2. 新增 create_dashboard() 方法建立統計面板
+  3. 更新 update_detection_results() 更新 dashboard 數據
+  4. 停止偵測時重置狀態顯示
+
+  執行方式:
+  cd DAY3
+  python yolo_gui.py
+
+> 你的dashboard被遮擋到了 ultrathink UI的layout
+
+● 讓我檢查一下目前的 UI 布局結構。
+
+● Read(DAY3\yolo_gui.py)
+  ⎿  Read 150 lines
+
+● 我理解問題了。左側面板太長被遮擋。讓我重新設計布局，改成：
+  - 左側：控制面板 (緊湊版)
+  - 右上：影像顯示區
+  - 右下：統計 Dashboard
+
+● Write(DAY3\yolo_gui.py)
+  ⎿  Added 197 lines, removed 191 lines
+       36
+       37            # 視窗設定
+       38            self.title("YOLOv11 硬幣檢測系統")
+       39 -          self.geometry("1200x800")
+       40 -          self.minsize(1000, 700)
+       39 +          self.geometry("1400x850")
+       40 +          self.minsize(1200, 750)
+       41
+       42            # 變數
+       43            self.model = None
+     ...
+        53        def create_widgets(self):
+        54            """建立所有 UI 元件"""
+        55
+        56 -          # ===== 左側控制面板 =====
+        57 -          self.control_frame =
+           - ctk.CTkFrame(self, width=300)
+        58 -
+           - self.control_frame.pack(side="left",
+           - fill="y", padx=10, pady=10)
+        56 +          # ===== 主容器 =====
+        57 +          main_container = ctk.CTkFrame(self,
+           +  fg_color="transparent")
+        58 +          main_container.pack(fill="both",
+           + expand=True, padx=10, pady=10)
+        59 +
+        60 +          # ===== 左側控制面板 (緊湊版) =====
+        61 +          self.control_frame =
+           + ctk.CTkFrame(main_container, width=280)
+        62 +
+           + self.control_frame.pack(side="left",
+           + fill="y", padx=(0, 10))
+        63
+             self.control_frame.pack_propagate(False)
+        64
+        65            # 標題
+        66 -          title_label = ctk.CTkLabel(
+        66 +          ctk.CTkLabel(
+        67                self.control_frame,
+        68                text="YOLOv11 硬幣檢測",
+        69 -              font=ctk.CTkFont(size=20
+           -  , weight="bold")
+        70 -          )
+        71 -          title_label.pack(pady=(20, 10))
+        69 +              font=ctk.CTkFont(size=18
+           +  , weight="bold")
+        70 +          ).pack(pady=(15, 10))
+        71
+        72            # ----- 模型設定區 -----
+        73            model_section =
+             ctk.CTkFrame(self.control_frame)
+        74 -          model_section.pack(fill="x", padx=
+           -  10, pady=10)
+        74 +          model_section.pack(fill="x", padx=8
+           +  , pady=5)
+        75
+        76            ctk.CTkLabel(
+        77                model_section,
+        78                text="模型設定",
+        79 -              font=ctk.CTkFont(size=14
+           -  , weight="bold")
+        80 -          ).pack(pady=(10, 5))
+        79 +              font=ctk.CTkFont(size=12
+           +  , weight="bold")
+        80 +          ).pack(pady=(8, 3))
+        81
+        82 -          # 選擇模型按鈕
+        82            self.select_model_btn =
+             ctk.CTkButton(
+        83                model_section,
+        84                text="選擇模型檔案 (.pt)",
+        85                command=self.select_model,
+        86 -              height=40
+        86 +              height=32
+        87            )
+        88 -
+           -  self.select_model_btn.pack(fill="x", padx=
+           -  10, pady=5)
+        88 +
+           +  self.select_model_btn.pack(fill="x", padx=8
+           +  , pady=3)
+        89
+        90 -          # 模型路徑顯示
+        90            self.model_label = ctk.CTkLabel(
+        91                model_section,
+        92                textvariable=self.model_path,
+        93 -              wraplength=250,
+        94 -              font=ctk.CTkFont(size=11)
+        93 +              wraplength=230,
+        94 +              font=ctk.CTkFont(size=10)
+        95            )
+        96 -          self.model_label.pack(pady=(5, 10))
+        96 +          self.model_label.pack(pady=(2, 3))
+        97
+        98 -          # 模型狀態指示燈
+        98            self.model_status = ctk.CTkLabel(
+        99                model_section,
+       100                text="● 模型未載入",
+       101                text_color="red",
+       102 -              font=ctk.CTkFont(size=12)
+       102 +              font=ctk.CTkFont(size=11)
+       103            )
+       104 -          self.model_status.pack(pady=(0, 10
+           -  ))
+       104 +          self.model_status.pack(pady=(0, 8))
+       105
+       106            # ----- 信心閾值設定 -----
+       107            conf_section =
+             ctk.CTkFrame(self.control_frame)
+       108 -          conf_section.pack(fill="x", padx=10
+           -  , pady=10)
+       108 +          conf_section.pack(fill="x", padx=8
+           +  , pady=5)
+       109
+       110 +          conf_header =
+           + ctk.CTkFrame(conf_section,
+           + fg_color="transparent")
+       111 +          conf_header.pack(fill="x", padx=8,
+           + pady=(8, 3))
+       112 +
+       113            ctk.CTkLabel(
+       114 -              conf_section,
+       114 +              conf_header,
+       115                text="信心閾值",
+       116 -              font=ctk.CTkFont(size=14
+           -  , weight="bold")
+       117 -          ).pack(pady=(10, 5))
+       116 +              font=ctk.CTkFont(size=12
+           +  , weight="bold")
+       117 +          ).pack(side="left")
+       118
+       119 +          self.conf_label = ctk.CTkLabel(
+       120 +              conf_header,
+       121 +
+           + text=f"{self.conf_threshold.get():.2f}",
+       122 +              font=ctk.CTkFont(size=12,
+           + weight="bold"),
+       123 +              text_color="#00BFFF"
+       124 +          )
+       125 +          self.conf_label.pack(side="right")
+       126 +
+       127            self.conf_slider = ctk.CTkSlider(
+       128                conf_section,
+       129                from_=0.1,
+     ...
+       120                variable=self.conf_threshold,
+       121                command=self.update_conf_label
+       122            )
+       123 -          self.conf_slider.pack(fill="x",
+           -  padx=10, pady=5)
+       123 +          self.conf_slider.pack(fill="x",
+           +  padx=8, pady=(3, 8))
+       124
+       125 -          self.conf_label = ctk.CTkLabel(
+       126 -              conf_section,
+       127 -              text=f"閾值:
+           - {self.conf_threshold.get():.2f}",
+       128 -              font=ctk.CTkFont(size=12)
+       129 -          )
+       130 -          self.conf_label.pack(pady=(0, 10))
+       131 -
+       125            # ----- 來源選擇區 -----
+       126            source_section =
+             ctk.CTkFrame(self.control_frame)
+       127 -          source_section.pack(fill="x", padx=
+           -  10, pady=10)
+       127 +          source_section.pack(fill="x", padx=
+           +  8, pady=5)
+       128
+       129            ctk.CTkLabel(
+       130                source_section,
+       131                text="選擇來源",
+       132 -              font=ctk.CTkFont(size=14
+           -  , weight="bold")
+       133 -          ).pack(pady=(10, 5))
+       132 +              font=ctk.CTkFont(size=12
+           +  , weight="bold")
+       133 +          ).pack(pady=(8, 5))
+       134
+       135 -          # 圖片按鈕
+       135 +          btn_frame =
+           + ctk.CTkFrame(source_section,
+           + fg_color="transparent")
+       136 +          btn_frame.pack(fill="x", padx=8,
+           + pady=3)
+       137 +
+       138            self.image_btn = ctk.CTkButton(
+       139 -              source_section,
+       140 -              text="📷 選擇圖片",
+       139 +              btn_frame,
+       140 +              text="📷 圖片",
+       141                command=self.select_image,
+       142 -              height=40,
+       142 +              height=32,
+       143 +              width=80,
+       144                state="disabled"
+       145            )
+       146 -          self.image_btn.pack(fill="x", padx=
+           -  10, pady=5)
+       146 +          self.image_btn.pack(
+           +  side="left", expand=True, fill="x", padx=(0
+           +  , 3))
+       147
+       148 -          # 影片按鈕
+       148            self.video_btn = ctk.CTkButton(
+       149 -              source_section,
+       150 -              text="🎬 選擇影片",
+       149 +              btn_frame,
+       150 +              text="🎬 影片",
+       151                command=self.select_video,
+       152 -              height=40,
+       152 +              height=32,
+       153 +              width=80,
+       154                state="disabled"
+       155            )
+       156 -          self.video_btn.pack(fill="x", padx=
+           -  10, pady=5)
+       156 +          self.video_btn.pack(side="left",
+           +  expand=True, fill="x", padx=3)
+       157
+       158 -          # 攝影機按鈕
+       158            self.webcam_btn = ctk.CTkButton(
+       159 -              source_section,
+       160 -              text="📹 開啟攝影機",
+       159 +              btn_frame,
+       160 +              text="📹 攝影機",
+       161                command=self.toggle_webcam,
+       162 -              height=40,
+       162 +              height=32,
+       163 +              width=80,
+       164                state="disabled"
+       165            )
+       166 -          self.webcam_btn.pack(
+           -  fill="x", padx=10, pady=5)
+       166 +          self.webcam_btn.pack(
+           +  side="left", expand=True, fill="x", padx=(3
+           +  , 0))
+       167
+       168 -          # 停止按鈕
+       168            self.stop_btn = ctk.CTkButton(
+       169                source_section,
+       170 -              text="⏹ 停止",
+       170 +              text="⏹ 停止偵測",
+       171                command=self.stop_detection,
+       172 -              height=40,
+       173 -              fg_color="red",
+       174 -              hover_color="darkred",
+       172 +              height=32,
+       173 +              fg_color="#8B0000",
+       174 +              hover_color="#B22222",
+       175                state="disabled"
+       176            )
+       177 -          self.stop_btn.pack(fill="x", padx=
+           -  10, pady=(15, 10))
+       177 +          self.stop_btn.pack(fill="x", padx=8
+           +  , pady=(8, 8))
+       178
+       179 -          # ----- 統計 Dashboard -----
+       180 -          self.create_dashboard()
+       179 +          # ----- 操作說明 -----
+       180 +          info_label = ctk.CTkLabel(
+       181 +              self.control_frame,
+       182 +              text="1. 載入模型 → 2. 選擇來源
+           +  → 3. 查看結果",
+       183 +              font=ctk.CTkFont(size=10),
+       184 +              text_color="gray60"
+       185 +          )
+       186 +          info_label.pack(pady=(10, 5))
+       187
+       188 -          # ===== 右側顯示區 =====
+       189 -          self.display_frame =
+           - ctk.CTkFrame(self)
+       190 -          self.display_frame.
+           -  pack(side="right", fill="both", expand=True
+           -  , padx=10, pady=10)
+       188 +          # ===== 右側區域 =====
+       189 +          right_frame =
+           + ctk.CTkFrame(main_container,
+           + fg_color="transparent")
+       190 +          right_frame.
+           +  pack(side="right", fill="both", expand=True
+           +  )
+       191
+       192 -          # 影像顯示標籤
+       192 +          # ----- 上方：影像顯示區 -----
+       193 +          self.display_frame =
+           + ctk.CTkFrame(right_frame)
+       194 +
+           + self.display_frame.pack(fill="both",
+           + expand=True, pady=(0, 10))
+       195 +
+       196            self.image_label = ctk.CTkLabel(
+       197                self.display_frame,
+       198                text="請載入模型並選擇來源",
+     ...
+       196            )
+       197            self.image_label.pack(expand=True,
+             fill="both")
+       198
+       199 -      def create_dashboard(self):
+       199 +          # ----- 下方：統計 Dashboard -----
+       200 +          self.create_dashboard(right_frame)
+       201 +
+       202 +      def create_dashboard(self, parent):
+       203            """建立統計 Dashboard"""
+       204            # Dashboard 主框架
+       205 -          dashboard_frame = ctk.CTkFrame(
+           -  self.control_frame)
+       206 -          dashboard_frame.pack(fill="both",
+           -  expand=True, padx=10, pady=10)
+       205 +          dashboard_frame = ctk.CTkFrame(
+           +  parent, height=180)
+       206 +          dashboard_frame.pack(fill="x", pady
+           +  =(0, 0))
+       207 +
+           + dashboard_frame.pack_propagate(False)
+       208
+       209 -          # 標題
+       209 +          # 左側：硬幣統計表
+       210 +          stats_frame =
+           + ctk.CTkFrame(dashboard_frame)
+       211 +          stats_frame.pack(side="left",
+           + fill="both", expand=True, padx=(0, 5))
+       212 +
+       213            ctk.CTkLabel(
+       214 -              dashboard_frame,
+       215 -              text="統計 Dashboard",
+       214 +              stats_frame,
+       215 +              text="硬幣統計",
+       216                font=ctk.CTkFont(size=14,
+             weight="bold")
+       217            ).pack(pady=(10, 5))
+       218
+       219 -          # 硬幣統計區
+       220 -          stats_frame = ctk.CTkFrame(
+           -  dashboard_frame, fg_color="transparent")
+       221 -          stats_frame.pack(fill="x", padx=5,
+           - pady=5)
+       219 +          # 統計表格
+       220 +          table_frame = ctk.CTkFrame(
+           +  stats_frame, fg_color="transparent")
+       221 +          table_frame.pack(fill="both",
+           + expand=True, padx=10, pady=(0, 10))
+       222
+       223            # 定義硬幣類型和顏色
+       224            self.coin_types = [
+       225 -              ("50元", ["50h", "50t"],
+           -  "#FF8C00"),   # 深橙色
+       226 -              ("10元", ["10h", "10t"], "#
+           -  8B4513"),   # 深棕色
+       227 -              ("5元", ["5h", "5t"], "#006400")
+           -  ,      # 深綠色
+       228 -              ("1元", ["1h", "1t"], "#00008B")
+           -  ,      # 深藍色
+       225 +              ("50元", ["50h", "50t"],
+           +  "#FF8C00", 50),
+       226 +              ("10元", ["10h", "10t"], "#
+           +  CD853F", 10),
+       227 +              ("5元", ["5h", "5t"], "#228B22",
+           +   5),
+       228 +              ("1元", ["1h", "1t"], "#4169E1",
+           +   1),
+       229            ]
+       230
+       231 -          # 儲存統計標籤的字典
+       231            self.coin_labels = {}
+       232
+       233            # 表頭
+       234 -          header_frame = ctk.CTkFrame(
+           -  stats_frame, fg_color="gray25")
+       234 +          header_frame = ctk.CTkFrame(
+           +  table_frame, fg_color="gray30", height=30)
+       235            header_frame.pack(fill="x",
+             pady=(0, 2))
+       236 +          header_frame.pack_propagate(False)
+       237
+       238 -          ctk.CTkLabel(header_frame,
+           - text="硬幣", width=60,
+           - font=ctk.CTkFont(size=11,
+           - weight="bold")).pack(side="left", padx=5,
+           - pady=3)
+       239 -          ctk.CTkLabel(header_frame,
+           - text="數量", width=50,
+           - font=ctk.CTkFont(size=11,
+           - weight="bold")).pack(side="left", padx=5,
+           - pady=3)
+       240 -          ctk.CTkLabel(header_frame,
+           - text="小計", width=70,
+           - font=ctk.CTkFont(size=11,
+           - weight="bold")).pack(side="left", padx=5,
+           - pady=3)
+       238 +          headers = [("硬幣", 80), ("數量",
+           + 60), ("小計", 80)]
+       239 +          for text, width in headers:
+       240 +              ctk.CTkLabel(
+       241 +                  header_frame,
+       242 +                  text=text,
+       243 +                  width=width,
+       244 +                  font=ctk.CTkFont(size=11,
+           + weight="bold")
+       245 +              ).pack(side="left", padx=5,
+           + pady=3)
+       246
+       247            # 每種硬幣的統計行
+       248 -          for coin_name, coin_classes, color
+           -  in self.coin_types:
+       249 -              row_frame = ctk.CTkFrame(
+           -  stats_frame, fg_color="gray20")
+       248 +          for coin_name, coin_classes, color,
+           +   value in self.coin_types:
+       249 +              row_frame = ctk.CTkFrame(
+           +  table_frame, fg_color="gray25", height=28)
+       250                row_frame.pack(fill="x",
+             pady=1)
+       251 +              row_frame.pack_propagate(False)
+       252
+       253 -              # 顏色指示方塊 + 硬幣名稱
+       254 -              name_frame =
+           -  ctk.CTkFrame(row_frame,
+           -  fg_color="transparent")
+       255 -              name_frame.pack(side="left",
+           -  padx=5, pady=3)
+       253 +              # 顏色標識 + 名稱
+       254 +              name_frame =
+           +  ctk.CTkFrame(row_frame,
+           +  fg_color="transparent", width=80)
+       255 +              name_frame.pack(side="left",
+           +  padx=5, pady=2)
+       256 +
+           + name_frame.pack_propagate(False)
+       257
+       258 -              color_box = ctk.CTkLabel(
+       258 +              ctk.CTkLabel(
+       259                    name_frame,
+       260 -                  text="■",
+       260 +                  text="●",
+       261                    text_color=color,
+       262 -                  font=ctk.CTkFont(size=14),
+       262 +                  font=ctk.CTkFont(size=12),
+       263                    width=15
+       264 -              )
+       265 -              color_box.pack(side="left")
+       264 +              ).pack(side="left")
+       265
+       266                ctk.CTkLabel(
+       267                    name_frame,
+       268                    text=coin_name,
+       269 -                  font=ctk.CTkFont(size=12),
+       270 -                  width=45
+       271 -              ).pack(side="left")
+       269 +                  font=ctk.CTkFont(size=11),
+       270 +              ).pack(side="left", padx=(2,
+           + 0))
+       271
+       272                # 數量
+       273                count_label = ctk.CTkLabel(
+       274                    row_frame,
+       275                    text="0",
+       276 -                  font=ctk.CTkFont(size=12),
+       277 -                  width=50
+       276 +                  font=ctk.CTkFont(size=11),
+       277 +                  width=60,
+       278 +                  text_color="gray60"
+       279                )
+       280 -              count_label.pack(side="left",
+           -  padx=5, pady=3)
+       280 +              count_label.pack(side="left",
+           +  padx=5, pady=2)
+       281
+       282                # 小計
+       283                subtotal_label = ctk.CTkLabel(
+       284                    row_frame,
+       285                    text="$0",
+       286 -                  font=ctk.CTkFont(size=12),
+       287 -                  width=70
+       286 +                  font=ctk.CTkFont(size=11),
+       287 +                  width=80,
+       288 +                  text_color="gray60"
+       289                )
+       290 -
+           -  subtotal_label.pack(side="left", padx=5,
+           -  pady=3)
+       290 +
+           +  subtotal_label.pack(side="left", padx=5,
+           +  pady=2)
+       291
+       292 -              # 儲存標籤引用
+       292                self.coin_labels[coin_name] = {
+       293                    "classes": coin_classes,
+       294                    "count": count_label,
+       295                    "subtotal": subtotal_label,
+       296 -                  "value":
+           - int(coin_name.replace("元", ""))
+       296 +                  "value": value
+       297                }
+       298
+       299 -          # 分隔線
+       300 -          separator
+           -   = ctk.CTkFrame(dashboard_frame, height=
+           -  2, fg_color="gray50")
+       301 -          separator.pack(fill="x", padx=10,
+           - pady=10)
+       299 +          # 右側：總計顯示
+       300 +          total_frame
+           +   = ctk.CTkFrame(dashboard_frame, width=280)
+       301 +          total_frame.pack(side="right",
+           + fill="y", padx=(5, 0))
+       302 +          total_frame.pack_propagate(False)
+       303
+       304 -          # 總計區
+       305 -          total_frame =
+           - ctk.CTkFrame(dashboard_frame,
+           - fg_color="gray25", corner_radius=10)
+       306 -          total_frame.pack(fill="x", padx=5,
+           - pady=5)
+       304 +          ctk.CTkLabel(
+       305 +              total_frame,
+       306 +              text="統計總覽",
+       307 +              font=ctk.CTkFont(size=14,
+           + weight="bold")
+       308 +          ).pack(pady=(10, 10))
+       309
+       310            # 總數量
+       311 -          total_count_frame
+           -   = ctk.CTkFrame(total_frame, fg_color="
+           -  transparent")
+       312 -          total_count_frame
+           -  .pack(fill="x", padx=10, pady=5)
+       311 +          count_row
+           +   = ctk.CTkFrame(total_frame, fg_color="
+           +  gray25", corner_radius=8)
+       312 +          count_row.pack(fill="x", padx=15
+           +  , pady=5)
+       313
+       314            ctk.CTkLabel(
+       315 -              total_count_frame,
+       316 -              text="硬幣總數:",
+       317 -              font=ctk.CTkFont(size=13)
+       318 -          ).pack(side="left")
+       315 +              count_row,
+       316 +              text="硬幣總數",
+       317 +              font=ctk.CTkFont(size=12)
+       318 +          ).pack(side="left", padx=10, pady=8
+           +  )
+       319
+       320            self.total_count_label =
+             ctk.CTkLabel(
+       321 -              total_count_frame,
+       321 +              count_row,
+       322                text="0 枚",
+       323 -              font=ctk.CTkFont(size=13
+           -  , weight="bold"),
+       323 +              font=ctk.CTkFont(size=14
+           +  , weight="bold"),
+       324                text_color="#00BFFF"
+       325            )
+       326 -
+           -  self.total_count_label.pack(side="right")
+       326 +
+           +  self.total_count_label.pack(side="right"
+           +  , padx=10, pady=8)
+       327
+       328 -          # 總金額 (大字顯示)
+       328 +          # 總金額
+       329 +          amount_row =
+           + ctk.CTkFrame(total_frame, fg_color="gray25",
+           +  corner_radius=8)
+       330 +          amount_row.pack(fill="x", padx=15,
+           + pady=5)
+       331 +
+       332 +          ctk.CTkLabel(
+       333 +              amount_row,
+       334 +              text="總金額",
+       335 +              font=ctk.CTkFont(size=12)
+       336 +          ).pack(side="left", padx=10,
+           + pady=8)
+       337 +
+       338            self.total_label = ctk.CTkLabel(
+       339 -              total_frame,
+       339 +              amount_row,
+       340                text="$0",
+       341 -              font=ctk.CTkFont(size=36
+           -  , weight="bold"),
+       341 +              font=ctk.CTkFont(size=24
+           +  , weight="bold"),
+       342                text_color="#00FF7F"
+       343            )
+       344 -          self.total_label.pack(pady=(5, 10))
+       344 +          self.total_label.pack(side="right"
+           +  , padx=10, pady=5)
+       345
+       346 -          # 即時狀態
+       346 +          # 狀態
+       347            self.status_label = ctk.CTkLabel(
+       348 -              dashboard_frame,
+       349 -              text="等待偵測...",
+       348 +              total_frame,
+       349 +              text="● 等待偵測...",
+       350                font=ctk.CTkFont(size=11),
+       351                text_color="gray60"
+       352            )
+       353 -          self.status_label.pack(pady=(5
+           -  , 10))
+       353 +          self.status_label.pack(pady=(10
+           +  , 10))
+       354
+       355        def update_conf_label(self, value):
+       356            """更新信心閾值標籤"""
+       357 -          self.conf_label.configure(text=f"
+           -  閾值: {value:.2f}")
+       357 +          self.conf_label.configure(text=f"
+           +  {value:.2f}")
+       358
+       359        def select_model(self):
+       360            """選擇並載入模型"""
+     ...
+       343
+       344        def load_model(self, model_path):
+       345            """載入 YOLO 模型
+             (在獨立線程中執行)"""
+       346 -          # 更新 UI 狀態
+       346            self.model_status.configure(text="●
+              載入中...", text_color="yellow")
+       347            self.select_model_btn.configure(sta
+             te="disabled")
+       348 -
+       349 -          # 儲存路徑供線程使用
+       348            self._loading_model_path =
+             model_path
+       349
+       350 -          # 在獨立線程中載入模型
+       350            thread = threading.Thread(target=se
+             lf._load_model_thread, daemon=True)
+       351            thread.start()
+       352
+     ...
+       358            """在獨立線程中載入模型"""
+       359            try:
+       360                from ultralytics import YOLO
+       361 -
+       361                model_path =
+             self._loading_model_path
+       362                model = YOLO(model_path)
+       363 -
+       364 -              # 回到主線程更新 UI
+       363                self.after(0, lambda:
+             self._on_model_loaded(model, model_path))
+       364 -
+       364            except Exception as e:
+       365 -              # 回到主線程處理錯誤
+       365                self.after(0, lambda:
+             self._on_model_load_error(str(e)))
+       366
+       367        def _on_model_loaded(self, model,
+             model_path):
+       368 -          """模型載入成功的回調
+     (在主線程執行)"""
+       368 +          """模型載入成功的回調"""
+       369            self.model = model
+       370            self.model_path.set(os.path.basenam
+             e(model_path))
+       371 -          self.model_status.configure(text="●
+           -   模型已載入", text_color="green")
+       371 +          self.model_status.configure(text="●
+           +   模型已載入", text_color="#00FF7F")
+       372            self.select_model_btn.configure(sta
+             te="normal")
+       373
+       374 -          # 啟用按鈕
+       374
+             self.image_btn.configure(state="normal")
+       375
+             self.video_btn.configure(state="normal")
+       376
+             self.webcam_btn.configure(state="normal")
+     ...
+       384            messagebox.showinfo("成功",
+             f"模型載入成功!\n{model_path}")
+       385
+       386        def _on_model_load_error(self,
+             error_msg):
+       387 -          """模型載入失敗的回調
+     (在主線程執行)"""
+       387 +          """模型載入失敗的回調"""
+       388            self.model_status.configure(text="●
+              載入失敗", text_color="red")
+       389            self.select_model_btn.configure(sta
+             te="normal")
+       390            messagebox.showerror("錯誤",
+             f"模型載入失敗:\n{error_msg}")
+     ...
+       411
+             messagebox.showerror("錯誤", "無法讀取圖片")
+       412                    return
+       413
+       414 -              # 執行偵測
+       414 +
+           + self.status_label.configure(text="●
+           + 處理圖片中...", text_color="yellow")
+       415 +
+       416                results = self.model.predict(
+       417                    frame,
+       418
+             conf=self.conf_threshold.get(),
+       419                    verbose=False
+       420                )
+       421
+       422 -              # 處理結果
+       422                annotated_frame, coins =
+             self.process_results(results, frame)
+       423 -
+       424 -              # 顯示結果
+       423
+             self.display_frame_on_gui(annotated_frame)
+       424
+             self.update_detection_results(coins)
+       425
+       426 +
+           + self.status_label.configure(text="●
+           + 圖片處理完成", text_color="#00FF7F")
+       427 +
+       428            except Exception as e:
+       429                messagebox.showerror("錯誤",
+             f"處理圖片時發生錯誤:\n{e}")
+       430
+     ...
+       453            self.current_source = "video"
+       454
+             self.stop_btn.configure(state="normal")
+       455
+       456 -          # 在新執行緒中處理影片
+       456            thread =
+             threading.Thread(target=self.video_loop,
+             daemon=True)
+       457            thread.start()
+       458
+     ...
+       472                messagebox.showerror("錯誤",
+             "無法開啟攝影機")
+       473                return
+       474
+       475 -          # 設定解析度
+       475
+             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+       476
+             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+       477
+       478            self.is_running = True
+       479            self.current_source = "webcam"
+       480 -          self.webcam_btn.configure(text="📹
+           -  關閉攝影機")
+       480 +          self.webcam_btn.configure(text="📹
+           +  關閉")
+       481
+             self.stop_btn.configure(state="normal")
+       482
+       483 -          # 在新執行緒中處理攝影機
+       483            thread =
+             threading.Thread(target=self.video_loop,
+             daemon=True)
+       484            thread.start()
+       485
+     ...
+       491                ret, frame = self.cap.read()
+       492                if not ret:
+       493                    if self.current_source ==
+             "video":
+       494 -                      # 影片結束，重新播放
+       494
+             self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+       495                        continue
+       496                    else:
+       497                        break
+       498
+       499 -              # 攝影機鏡像
+       499                if self.current_source ==
+             "webcam":
+       500                    frame = cv2.flip(frame, 1)
+       501
+       502 -              # 執行偵測
+       502                results = self.model.predict(
+       503                    frame,
+       504
+             conf=self.conf_threshold.get(),
+       505                    verbose=False
+       506                )
+       507
+       508 -              # 處理結果
+       508                annotated_frame, coins =
+             self.process_results(results, frame)
+       509 -
+       510 -              # 在主執行緒更新 GUI
+       509                self.after(0, lambda
+             f=annotated_frame, c=coins:
+             self.update_gui(f, c))
+       510
+       511            self.after(0,
+             self.on_video_stopped)
+     ...
+       521            if self.cap is not None:
+       522                self.cap.release()
+       523                self.cap = None
+       524 -          self.webcam_btn.configure(text="📹
+           -  開啟攝影機")
+       524 +          self.webcam_btn.configure(text="📹
+           +  攝影機")
+       525
+             self.stop_btn.configure(state="disabled")
+       526
+       527        def update_gui(self, frame, coins):
+       528 -          """更新 GUI (在主執行緒)"""
+       528 +          """更新 GUI"""
+       529            if self.is_running:
+       530
+             self.display_frame_on_gui(frame)
+       531
+             self.update_detection_results(coins)
+     ...
+       547
+       548
+             detected_coins.append(class_name)
+       549
+       550 -                  # 根據硬幣類型選擇顏色 (BGR
+           -   格式，深色以便在白色背景上看清)
+       550 +                  # 根據硬幣類型選擇顏色 (BGR)
+       551                    if
+             class_name.startswith('50'):
+       552 -                      color = (0, 140, 255)
+           -       # 深橙色 (50元)
+       553 -                      text_color = (255, 255,
+           -   255)  # 白色文字
+       552 +                      color = (0, 140, 255)
+           +       # 深橙色
+       553 +                      text_color = (255, 255,
+           +   255)
+       554                    elif
+             class_name.startswith('10'):
+       555 -                      color = (139, 69, 19)
+           -         # 深棕色 (10元)
+       555 +                      color = (47, 133, 205)
+           +        # 棕色
+       556                        text_color = (255, 255,
+              255)
+       557                    elif
+             class_name.startswith('5'):
+       558 -                      color = (0, 100, 0)
+           -           # 深綠色 (5元)
+       558 +                      color = (34, 139, 34)
+           +         # 深綠色
+       559                        text_color = (255, 255,
+              255)
+       560                    elif
+             class_name.startswith('1'):
+       561 -                      color = (139, 0, 0)
+           -           # 深藍色 (1元)
+       561 +                      color = (225, 105, 65)
+           +        # 藍色
+       562                        text_color = (255, 255,
+              255)
+       563                    else:
+       564 -                      color = (128, 0, 128)
+           -       # 紫色 (其他)
+       564 +                      color = (128, 0, 128)
+           +       # 紫色
+       565                        text_color = (255, 255,
+              255)
+       566
+       567 -                  # 繪製邊界框 (加粗)
+       567
+             cv2.rectangle(annotated_frame, (x1, y1),
+             (x2, y2), color, 4)
+       568
+       569 -                  # 繪製標籤
+       569                    value =
+             COIN_VALUES.get(class_name, 0)
+       570                    label = f"{class_name}
+             {conf:.2f}"
+       571                    if value > 0:
+     ...
+       576                    (label_w, label_h), _ =
+             cv2.getTextSize(
+       577                        label,
+             cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2
+       578                    )
+       579 -                  # 標籤背景
+       579                    cv2.rectangle(
+       580                        annotated_frame,
+       581                        (x1, y1 - label_h -
+             10),
+       582                        (x1 + label_w + 10,
+             y1),
+       583                        color, -1
+       584                    )
+       585 -                  # 標籤文字
+       585                    cv2.putText(
+       586                        annotated_frame, label,
+       587                        (x1 + 5, y1 - 5),
+       588
+             cv2.FONT_HERSHEY_SIMPLEX, 0.7, text_color, 2
+       589                    )
+       590
+       591 -          # 顯示總金額
+     (深紅色，白色背景上清晰可見)
+       591 +          # 顯示總金額
+       592            if detected_coins:
+       593                total = sum(COIN_VALUES.get(c,
+             0) for c in detected_coins)
+       594                total_text = f"Total: ${total}"
+       595 -              # 先畫深色背景
+       595                (tw, th), _ =
+             cv2.getTextSize(total_text,
+             cv2.FONT_HERSHEY_SIMPLEX, 1.5, 3)
+       596                cv2.rectangle(annotated_frame,
+             (5, 10), (tw + 20, th + 25), (0, 0, 139),
+             -1)
+       597 -              # 再畫白色文字
+       597                cv2.putText(
+       598                    annotated_frame,
+             total_text,
+       599                    (10, 50),
+     ...
+       608
+       609        def display_frame_on_gui(self, frame):
+       610            """在 GUI 上顯示影像"""
+       611 -          # BGR to RGB
+       611            frame_rgb = cv2.cvtColor(frame,
+             cv2.COLOR_BGR2RGB)
+       612
+       613 -          # 調整大小以適應顯示區域
+       613            display_width =
+             self.display_frame.winfo_width() - 20
+       614            display_height =
+             self.display_frame.winfo_height() - 20
+       615
+     ...
+       623            else:
+       624                frame_resized = frame_rgb
+       625
+       626 -          # 轉換為 CTk 可用的格式
+       626            image =
+             Image.fromarray(frame_resized)
+       627 -          photo =
+           - ctk.CTkImage(light_image=image,
+           - dark_image=image,
+           - size=(frame_resized.shape[1],
+           - frame_resized.shape[0]))
+       627 +          photo = ctk.CTkImage(
+       628 +              light_image=image,
+       629 +              dark_image=image,
+       630 +              size=(frame_resized.shape[1],
+           + frame_resized.shape[0])
+       631 +          )
+       632
+       633
+             self.image_label.configure(image=photo,
+             text="")
+       634            self.image_label.image = photo
+       635
+       636        def update_detection_results(self,
+             coins):
+       637            """更新偵測結果顯示 (Dashboard)"""
+       638 -          # 統計各類硬幣數量
+       638            coin_counts = {}
+       639            for coin in coins:
+       640                coin_counts[coin] =
+             coin_counts.get(coin, 0) + 1
+       641
+       642 -          # 更新每種硬幣的統計
+       642            total_coins = 0
+       643            total_amount = 0
+       644
+       645            for coin_name, info in
+             self.coin_labels.items():
+       646 -              # 計算該面額的硬幣數量
+       646                count = 0
+       647                for cls in info["classes"]:
+       648                    count +=
+             coin_counts.get(cls, 0)
+       649
+       650 -              # 計算小計
+       650                value = info["value"]
+       651                subtotal = count * value
+       652
+       653 -              # 更新標籤
+       653
+             info["count"].configure(text=str(count))
+       654                info["subtotal"].configure(text
+             =f"${subtotal}")
+       655
+       656 -              # 如果有偵測到，高亮顯示
+       656                if count > 0:
+       657                    info["count"].configure(tex
+             t_color="#00FF7F")
+       658                    info["subtotal"].configure(
+             text_color="#00FF7F")
+       659                else:
+       660 -
+           -  info["count"].configure(text_color="gray70
+           -  ")
+       661 -
+           -  info["subtotal"].configure(text_color="
+           -  gray70")
+       660 +
+           +  info["count"].configure(text_color="gray60
+           +  ")
+       661 +
+           +  info["subtotal"].configure(text_color="
+           +  gray60")
+       662
+       663                total_coins += count
+       664                total_amount += subtotal
+       665
+       666 -          # 更新總數量
+       666            self.total_count_label.configure(te
+             xt=f"{total_coins} 枚")
+       667 -
+       668 -          # 更新總金額
+       667            self.total_label.configure(text=f"$
+             {total_amount}")
+       668
+       669 -          # 更新狀態
+       669            if total_coins > 0:
+       670                self.status_label.configure(
+       671 -                  text=f"偵測中...
+           -  發現 {total_coins} 枚硬幣",
+       671 +                  text=f"● 偵測中 -
+           +  發現 {total_coins} 枚硬幣",
+       672                    text_color="#00FF7F"
+       673                )
+       674            else:
+       675                self.status_label.configure(
+       676 -                  text="偵測中... 未發現硬幣",
+       677 -                  text_color="gray60"
+       676 +                  text="● 偵測中 - 未發現硬幣",
+       677 +                  text_color="yellow"
+       678                )
+       679
+       680        def stop_detection(self):
+     ...
+       690            if self.cap is not None:
+       691                self.cap.release()
+       692                self.cap = None
+       693 -          self.webcam_btn.configure(text="📹
+           -  開啟攝影機")
+       693 +          self.webcam_btn.configure(text="📹
+           +  攝影機")
+       694
+             self.stop_btn.configure(state="disabled")
+       695 -          self.status_label.configure(text="
+           -  等待偵測...", text_color="gray60")
+       695 +          self.status_label.configure(text="
+           +  ● 等待偵測...", text_color="gray60")
+       696
+       697        def on_closing(self):
+       698            """關閉視窗時的處理"""
+
+● Bash(cd "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY3"
+       && python -m py_compile yolo_gui.py && echo "Syntax OK")
+  ⎿  Syntax OK
+
+● 已重新設計 UI 布局，Dashboard 移到右下方不會被遮擋。
+
+  新布局結構
+
+  ┌──────────────────────────────────────────────────────────────────┐
+  │                    YOLOv11 硬幣檢測系統                            │
+  ├────────────┬─────────────────────────────────────────────────────┤
+  │            │                                                     │
+  │  控制面板   │              影像顯示區                              │
+  │  (緊湊版)   │              (上方，自動擴展)                         │
+  │            │                                                     │
+  │ ┌────────┐ │                                                     │
+  │ │模型設定│ │                                                     │
+  │ └────────┘ │                                                     │
+  │ ┌────────┐ ├─────────────────────────────────────────────────────┤
+  │ │信心閾值│ │  硬幣統計                    │  統計總覽             │
+  │ └────────┘ │ ┌──────┬────┬────┐          │ ┌───────────────────┐ │
+  │ ┌────────┐ │ │ 硬幣 │數量│小計│          │ │硬幣總數    0 枚   │ │
+  │ │來源選擇│ │ ├──────┼────┼────┤          │ ├───────────────────┤ │
+  │ │📷│🎬│📹│ │ │● 50元│ 0  │ $0 │          │ │總金額       $0    │ │
+  │ └────────┘ │ │● 10元│ 0  │ $0 │          │ └───────────────────┘ │
+  │ [停止偵測] │ │● 5元 │ 0  │ $0 │          │   ● 等待偵測...       │
+  │            │ │● 1元 │ 0  │ $0 │          │                       │
+  │            │ └──────┴────┴────┘          │                       │
+  └────────────┴─────────────────────────────────────────────────────┘
+
+  改進項目
+
+  1. 布局優化
+    - 左側控制面板更緊湊 (280px)
+    - Dashboard 移到右下方 (固定高度 180px)
+    - 影像顯示區自動擴展填滿剩餘空間
+  2. 按鈕整合
+    - 圖片/影片/攝影機 三個按鈕並排顯示
+    - 節省垂直空間
+  3. Dashboard 分為兩區
+    - 左側：硬幣統計表（顏色標識、數量、小計）
+    - 右側：總覽（硬幣總數、總金額、狀態）
+  4. 視窗尺寸調整
+    - 預設: 1400x850
+    - 最小: 1200x750
+
+  執行方式:
+  python yolo_gui.py
+
+> 我的影片來自手機 所以把底下的dashboard蓋掉了 ultrathink
+
+● 了解，手機影片是直式的會把 dashboard 蓋住。讓我重新設計布局，把 Dashboard 放到右側。
+
+● Write(DAY3\yolo_gui.py)
+  ⎿  Added 178 lines, removed 157 lines
+       36
+       37            # 視窗設定
+       38            self.title("YOLOv11 硬幣檢測系統")
+       39 -          self.geometry("1400x850")
+       40 -          self.minsize(1200, 750)
+       39 +          self.geometry("1500x900")
+       40 +          self.minsize(1300, 800)
+       41
+       42            # 變數
+       43            self.model = None
+     ...
+       51            self.create_widgets()
+       52
+       53        def create_widgets(self):
+       54 -          """建立所有 UI 元件"""
+       54 +          """建立所有 UI 元件 - 三欄式布局"""
+       55
+       56            # ===== 主容器 =====
+       57            main_container = ctk.CTkFrame(self,
+            fg_color="transparent")
+       58            main_container.pack(fill="both",
+            expand=True, padx=10, pady=10)
+       59
+       60 -          # ===== 左側控制面板 (緊湊版) =====
+       61 -          self.control_frame =
+          -  ctk.CTkFrame(main_container, width=280)
+       60 +          # ===== 左側：控制面板 =====
+       61 +          self.control_frame =
+          +  ctk.CTkFrame(main_container, width=250)
+       62            self.control_frame.pack(side="left",
+             fill="y", padx=(0, 10))
+       63
+            self.control_frame.pack_propagate(False)
+       64
+       65 +          self.create_control_panel()
+       66 +
+       67 +          # ===== 中間：影像顯示區 =====
+       68 +          self.display_frame =
+          + ctk.CTkFrame(main_container)
+       69 +          self.display_frame.pack(side="left",
+          +  fill="both", expand=True, padx=(0, 10))
+       70 +
+       71 +          self.image_label = ctk.CTkLabel(
+       72 +              self.display_frame,
+       73 +              text="請載入模型並選擇來源",
+       74 +              font=ctk.CTkFont(size=16)
+       75 +          )
+       76 +          self.image_label.pack(expand=True,
+          + fill="both")
+       77 +
+       78 +          # ===== 右側：統計 Dashboard =====
+       79 +          self.dashboard_frame =
+          + ctk.CTkFrame(main_container, width=280)
+       80 +
+          + self.dashboard_frame.pack(side="right",
+          + fill="y")
+       81 +
+          + self.dashboard_frame.pack_propagate(False)
+       82 +
+       83 +          self.create_dashboard()
+       84 +
+       85 +      def create_control_panel(self):
+       86 +          """建立左側控制面板"""
+       87 +
+       88            # 標題
+       89            ctk.CTkLabel(
+       90                self.control_frame,
+       91                text="YOLOv11 硬幣檢測",
+       92 -              font=ctk.CTkFont(size=18
+          -  , weight="bold")
+       92 +              font=ctk.CTkFont(size=16
+          +  , weight="bold")
+       93            ).pack(pady=(15, 10))
+       94
+       95            # ----- 模型設定區 -----
+     ...
+       90            self.model_label = ctk.CTkLabel(
+       91                model_section,
+       92                textvariable=self.model_path,
+       93 -              wraplength=230,
+       93 +              wraplength=200,
+       94                font=ctk.CTkFont(size=10)
+       95            )
+       96            self.model_label.pack(pady=(2, 3))
+     ...
+       143                font=ctk.CTkFont(size=12,
+             weight="bold")
+       144            ).pack(pady=(8, 5))
+       145
+       146 -          btn_frame =
+           - ctk.CTkFrame(source_section,
+           - fg_color="transparent")
+       147 -          btn_frame.pack(fill="x", padx=8,
+           - pady=3)
+       148 -
+       146            self.image_btn = ctk.CTkButton(
+       147 -              btn_frame,
+       148 -              text="📷 圖片",
+       147 +              source_section,
+       148 +              text="📷 選擇圖片",
+       149                command=self.select_image,
+       150                height=32,
+       151 -              width=80,
+       151                state="disabled"
+       152            )
+       153 -          self.image_btn.pack(
+           -  side="left", expand=True, fill="x", padx=(0
+           -  , 3))
+       153 +          self.image_btn.pack(fill="x", padx=
+           +  8, pady=2)
+       154
+       155            self.video_btn = ctk.CTkButton(
+       156 -              btn_frame,
+       157 -              text="🎬 影片",
+       156 +              source_section,
+       157 +              text="🎬 選擇影片",
+       158                command=self.select_video,
+       159                height=32,
+       160 -              width=80,
+       160                state="disabled"
+       161            )
+       162 -          self.video_btn.pack(
+           -  side="left", expand=True, fill="x", padx=3)
+       162 +          self.video_btn.pack(fill="x", padx=
+           +  8, pady=2)
+       163
+       164            self.webcam_btn = ctk.CTkButton(
+       165 -              btn_frame,
+       166 -              text="📹 攝影機",
+       165 +              source_section,
+       166 +              text="📹 開啟攝影機",
+       167                command=self.toggle_webcam,
+       168                height=32,
+       169 -              width=80,
+       169                state="disabled"
+       170            )
+       171 -          self.webcam_btn.pack(
+           -  side="left", expand=True, fill="x", padx=(3
+           -  , 0))
+       171 +          self.webcam_btn.pack(
+           +  fill="x", padx=8, pady=2)
+       172
+       173            self.stop_btn = ctk.CTkButton(
+       174                source_section,
+     ...
+       185                hover_color="#B22222",
+       186                state="disabled"
+       187            )
+       188 -          self.stop_btn.pack(fill="x",
+           -  padx=8, pady=(8, 8))
+       188 +          self.stop_btn.pack(fill="x",
+           +  padx=8, pady=(10, 8))
+       189
+       190            # ----- 操作說明 -----
+       191 -          info_label = ctk.CTkLabel(
+       191 +          ctk.CTkLabel(
+       192                self.control_frame,
+       193 -              text="1. 載入模型 → 2. 選擇來源 →
+     3
+
+           -  . 查看結果",
+       193 +              text="操作流程:\n1. 載入模型\n2.
+     選擇來源
+           +  \n3. 查看結果",
+       194                font=ctk.CTkFont(size=10),
+       195 -              text_color="gray60"
+       196 -          )
+       197 -          info_label.pack(pady=(10, 5))
+       195 +              text_color="gray60",
+       196 +              justify="left"
+       197 +          ).pack(pady=(15, 5), padx=10,
+           + anchor="w")
+       198
+       199 -          # ===== 右側區域 =====
+       200 -          right_frame =
+           - ctk.CTkFrame(main_container,
+           - fg_color="transparent")
+       201 -          right_frame.pack(side="right",
+           - fill="both", expand=True)
+       199 +      def create_dashboard(self):
+       200 +          """建立右側統計 Dashboard"""
+       201
+       202 -          # ----- 上方：影像顯示區 -----
+       203 -          self.display_frame =
+           - ctk.CTkFrame(right_frame)
+       204 -
+           - self.display_frame.pack(fill="both",
+           - expand=True, pady=(0, 10))
+       202 +          # 標題
+       203 +          ctk.CTkLabel(
+       204 +              self.dashboard_frame,
+       205 +              text="📊 統計 Dashboard",
+       206 +              font=ctk.CTkFont(size=16,
+           + weight="bold")
+       207 +          ).pack(pady=(15, 10))
+       208
+       209 -          self.image_label = ctk.CTkLabel(
+       210 -              self.display_frame,
+       211 -              text="請載入模型並選擇來源",
+       212 -              font=ctk.CTkFont(size=16)
+       213 -          )
+       214 -          self.image_label.pack(expand=True,
+           - fill="both")
+       209 +          # ===== 總金額顯示 (最上方，最醒目)
+           +  =====
+       210 +          total_section =
+           + ctk.CTkFrame(self.dashboard_frame,
+           + fg_color="#1a1a2e", corner_radius=10)
+       211 +          total_section.pack(fill="x",
+           + padx=10, pady=5)
+       212
+       213 -          # ----- 下方：統計 Dashboard -----
+       214 -          self.create_dashboard(right_frame)
+       213 +          ctk.CTkLabel(
+       214 +              total_section,
+       215 +              text="總金額",
+       216 +              font=ctk.CTkFont(size=12),
+       217 +              text_color="gray70"
+       218 +          ).pack(pady=(10, 0))
+       219
+       220 -      def create_dashboard(self, parent):
+       221 -          """建立統計 Dashboard"""
+       222 -          # Dashboard 主框架
+       223 -          dashboard_frame =
+           - ctk.CTkFrame(parent, height=180)
+       224 -          dashboard_frame.pack(fill="x",
+           - pady=(0, 0))
+       225 -
+           - dashboard_frame.pack_propagate(False)
+       220 +          self.total_label = ctk.CTkLabel(
+       221 +              total_section,
+       222 +              text="$0",
+       223 +              font=ctk.CTkFont(size=42,
+           + weight="bold"),
+       224 +              text_color="#00FF7F"
+       225 +          )
+       226 +          self.total_label.pack(pady=(0, 5))
+       227
+       228 -          # 左側：硬幣統計表
+       229 -          stats_frame =
+           - ctk.CTkFrame(dashboard_frame)
+       230 -          stats_frame.pack(side="left",
+           - fill="both", expand=True, padx=(0, 5))
+       228 +          self.total_count_label =
+           + ctk.CTkLabel(
+       229 +              total_section,
+       230 +              text="共 0 枚硬幣",
+       231 +              font=ctk.CTkFont(size=12),
+       232 +              text_color="#00BFFF"
+       233 +          )
+       234 +
+           + self.total_count_label.pack(pady=(0, 10))
+       235
+       236 +          # ===== 硬幣統計表 =====
+       237 +          stats_section =
+           + ctk.CTkFrame(self.dashboard_frame)
+       238 +          stats_section.pack(fill="x",
+           + padx=10, pady=10)
+       239 +
+       240            ctk.CTkLabel(
+       241 -              stats_frame,
+       242 -              text="硬幣統計",
+       243 -              font=ctk.CTkFont(size=14
+           -  , weight="bold")
+       241 +              stats_section,
+       242 +              text="硬幣明細",
+       243 +              font=ctk.CTkFont(size=12
+           +  , weight="bold")
+       244            ).pack(pady=(10, 5))
+       245
+       246 -          # 統計表格
+       247 -          table_frame =
+           - ctk.CTkFrame(stats_frame,
+           - fg_color="transparent")
+       248 -          table_frame.pack(fill="both",
+           - expand=True, padx=10, pady=(0, 10))
+       249 -
+       246            # 定義硬幣類型和顏色
+       247            self.coin_types = [
+       248                ("50元", ["50h", "50t"],
+             "#FF8C00", 50),
+     ...
+       245
+       246            self.coin_labels = {}
+       247
+       248 -          # 表頭
+       249 -          header_frame =
+           - ctk.CTkFrame(table_frame, fg_color="gray30",
+           -  height=30)
+       250 -          header_frame.pack(fill="x",
+           - pady=(0, 2))
+       251 -          header_frame.pack_propagate(False)
+       252 -
+       253 -          headers = [("硬幣", 80), ("數量",
+           - 60), ("小計", 80)]
+       254 -          for text, width in headers:
+       255 -              ctk.CTkLabel(
+       256 -                  header_frame,
+       257 -                  text=text,
+       258 -                  width=width,
+       259 -                  font=ctk.CTkFont(size=11,
+           - weight="bold")
+       260 -              ).pack(side="left", padx=5,
+           - pady=3)
+       261 -
+       248            # 每種硬幣的統計行
+       249            for coin_name, coin_classes, color,
+              value in self.coin_types:
+       250 -              row_frame = ctk.CTkFrame(
+           -  table_frame, fg_color="gray25", height=28)
+       251 -              row_frame.pack(fill="x", pady=1
+           -  )
+       252 -              row_frame.pack_propagate(False)
+       250 +              row_frame = ctk.CTkFrame(
+           +  stats_section, fg_color="gray20",
+           +  corner_radius=5)
+       251 +              row_frame.pack(fill="x",
+           +  padx=8, pady=2)
+       252
+       253 -              # 顏色標識 + 名稱
+       254 -              name_frame
+           -   = ctk.CTkFrame(row_frame,
+           -  fg_color="transparent", width=80)
+       255 -              name_frame
+           -  .pack(side="left", padx=5, pady=2)
+       256 -
+           - name_frame.pack_propagate(False)
+       253 +              # 左側：顏色標識 + 名稱
+       254 +              left_frame
+           +   = ctk.CTkFrame(row_frame,
+           +  fg_color="transparent")
+       255 +              left_frame
+           +  .pack(side="left", padx=8, pady=6)
+       256
+       257                ctk.CTkLabel(
+       258 -                  name_frame,
+       258 +                  left_frame,
+       259                    text="●",
+       260                    text_color=color,
+       261 -                  font=ctk.CTkFont(size=12),
+       262 -                  width=15
+       261 +                  font=ctk.CTkFont(size=14)
+       262                ).pack(side="left")
+       263
+       264                ctk.CTkLabel(
+       265 -                  name_frame,
+       266 -                  text=coin_name,
+       267 -                  font=ctk.CTkFont(size=11),
+       268 -              ).pack(side="left", padx=(2, 0)
+           -  )
+       265 +                  left_frame,
+       266 +                  text=f" {coin_name}",
+       267 +                  font=ctk.CTkFont(size=12)
+       268 +              ).pack(side="left")
+       269
+       270 -              # 數量
+       270 +              # 右側：數量 x 金額 = 小計
+       271 +              right_frame =
+           + ctk.CTkFrame(row_frame,
+           + fg_color="transparent")
+       272 +              right_frame.pack(side="right",
+           + padx=8, pady=6)
+       273 +
+       274                count_label = ctk.CTkLabel(
+       275 -                  row_frame,
+       275 +                  right_frame,
+       276                    text="0",
+       277 -                  font=ctk.CTkFont(size=11),
+       278 -                  width=60,
+       279 -                  text_color="gray60"
+       277 +                  font=ctk.CTkFont(size=
+           +  12, weight="bold"),
+       278 +                  text_color="gray50",
+       279 +                  width=30
+       280                )
+       281 -              count_label.pack(side="left"
+           -  , padx=5, pady=2)
+       281 +              count_label.pack(side="left")
+       282
+       283 -              # 小計
+       283 +              ctk.CTkLabel(
+       284 +                  right_frame,
+       285 +                  text=" × ",
+       286 +                  font=ctk.CTkFont(size=10),
+       287 +                  text_color="gray50"
+       288 +              ).pack(side="left")
+       289 +
+       290 +              ctk.CTkLabel(
+       291 +                  right_frame,
+       292 +                  text=f"${value}",
+       293 +                  font=ctk.CTkFont(size=10),
+       294 +                  text_color="gray50",
+       295 +                  width=30
+       296 +              ).pack(side="left")
+       297 +
+       298 +              ctk.CTkLabel(
+       299 +                  right_frame,
+       300 +                  text=" = ",
+       301 +                  font=ctk.CTkFont(size=10),
+       302 +                  text_color="gray50"
+       303 +              ).pack(side="left")
+       304 +
+       305                subtotal_label = ctk.CTkLabel(
+       306 -                  row_frame,
+       306 +                  right_frame,
+       307                    text="$0",
+       308 -                  font=ctk.CTkFont(size=11),
+       309 -                  width=80,
+       310 -                  text_color="gray60"
+       308 +                  font=ctk.CTkFont(size=
+           +  12, weight="bold"),
+       309 +                  text_color="gray50",
+       310 +                  width=50
+       311                )
+       312 -              subtotal_label.pack(side="left"
+           -  , padx=5, pady=2)
+       312 +              subtotal_label.pack(side="left"
+           +  )
+       313
+       314                self.coin_labels[coin_name] = {
+       315                    "classes": coin_classes,
+       316                    "count": count_label,
+       317                    "subtotal": subtotal_label,
+       318 -                  "value": value
+       318 +                  "value": value,
+       319 +                  "row": row_frame
+       320                }
+       321
+       322 -          # 右側：總計顯示
+       323 -          total_frame =
+           - ctk.CTkFrame(dashboard_frame, width=280)
+       324 -          total_frame.pack(side="right",
+           - fill="y", padx=(5, 0))
+       325 -          total_frame.pack_propagate(False)
+       322 +          # ===== 狀態顯示 =====
+       323 +          status_section =
+           + ctk.CTkFrame(self.dashboard_frame,
+           + fg_color="transparent")
+       324 +          status_section.pack(fill="x",
+           + padx=10, pady=15)
+       325
+       326 -          ctk.CTkLabel(
+       327 -              total_frame,
+       328 -              text="統計總覽",
+       329 -              font=ctk.CTkFont(size=14,
+           - weight="bold")
+       330 -          ).pack(pady=(10, 10))
+       331 -
+       332 -          # 總數量
+       333 -          count_row =
+           - ctk.CTkFrame(total_frame, fg_color="gray25",
+           -  corner_radius=8)
+       334 -          count_row.pack(fill="x", padx=15,
+           - pady=5)
+       335 -
+       336 -          ctk.CTkLabel(
+       337 -              count_row,
+       338 -              text="硬幣總數",
+       339 -              font=ctk.CTkFont(size=12)
+       340 -          ).pack(side="left", padx=10,
+           - pady=8)
+       341 -
+       342 -          self.total_count_label =
+           - ctk.CTkLabel(
+       343 -              count_row,
+       344 -              text="0 枚",
+       345 -              font=ctk.CTkFont(size=14,
+           - weight="bold"),
+       346 -              text_color="#00BFFF"
+       347 -          )
+       348 -
+           - self.total_count_label.pack(side="right",
+           - padx=10, pady=8)
+       349 -
+       350 -          # 總金額
+       351 -          amount_row =
+           - ctk.CTkFrame(total_frame, fg_color="gray25",
+           -  corner_radius=8)
+       352 -          amount_row.pack(fill="x", padx=15,
+           - pady=5)
+       353 -
+       354 -          ctk.CTkLabel(
+       355 -              amount_row,
+       356 -              text="總金額",
+       357 -              font=ctk.CTkFont(size=12)
+       358 -          ).pack(side="left", padx=10,
+           - pady=8)
+       359 -
+       360 -          self.total_label = ctk.CTkLabel(
+       361 -              amount_row,
+       362 -              text="$0",
+       363 -              font=ctk.CTkFont(size=24,
+           - weight="bold"),
+       364 -              text_color="#00FF7F"
+       365 -          )
+       366 -          self.total_label.pack(side="right",
+           -  padx=10, pady=5)
+       367 -
+       368 -          # 狀態
+       326            self.status_label = ctk.CTkLabel(
+       327 -              total_frame,
+       327 +              status_section,
+       328                text="● 等待偵測...",
+       329 -              font=ctk.CTkFont(size=11),
+       329 +              font=ctk.CTkFont(size=12),
+       330                text_color="gray60"
+       331            )
+       332 -          self.status_label.pack(pady=(10, 10
+           -  ))
+       332 +          self.status_label.pack()
+       333
+       334 +          # ===== FPS 顯示 =====
+       335 +          self.fps_label = ctk.CTkLabel(
+       336 +              status_section,
+       337 +              text="",
+       338 +              font=ctk.CTkFont(size=10),
+       339 +              text_color="gray50"
+       340 +          )
+       341 +          self.fps_label.pack(pady=(5, 0))
+       342 +
+       343        def update_conf_label(self, value):
+       344            """更新信心閾值標籤"""
+       345            self.conf_label.configure(text=f"{v
+             alue:.2f}")
+     ...
+       506
+       507            self.is_running = True
+       508            self.current_source = "webcam"
+       509 -          self.webcam_btn.configure(text="📹
+           -  關閉")
+       509 +          self.webcam_btn.configure(text="📹
+           +  關閉攝影機")
+       510
+             self.stop_btn.configure(state="normal")
+       511
+       512            thread =
+             threading.Thread(target=self.video_loop,
+             daemon=True)
+     ...
+       514
+       515        def video_loop(self):
+       516            """影片/攝影機處理迴圈"""
+       517 +          import time
+       518 +          frame_count = 0
+       519 +          start_time = time.time()
+       520 +
+       521            while self.is_running and self.cap
+             is not None:
+       522                ret, frame = self.cap.read()
+       523                if not ret:
+     ...
+       533                )
+       534
+       535                annotated_frame, coins =
+             self.process_results(results, frame)
+       536 -              self.after(0, lambda
+           - f=annotated_frame, c=coins:
+           - self.update_gui(f, c))
+       536
+       537 +              # 計算 FPS
+       538 +              frame_count += 1
+       539 +              elapsed = time.time() -
+           + start_time
+       540 +              if elapsed > 0:
+       541 +                  fps = frame_count / elapsed
+       542 +                  fps_text = f"FPS:
+           + {fps:.1f}"
+       543 +              else:
+       544 +                  fps_text = ""
+       545 +
+       546 +              self.after(0, lambda
+           + f=annotated_frame, c=coins, ft=fps_text:
+           + self.update_gui(f, c, ft))
+       547 +
+       548            self.after(0,
+             self.on_video_stopped)
+       549
+       550        def on_video_stopped(self):
+     ...
+       542            if self.cap is not None:
+       543                self.cap.release()
+       544                self.cap = None
+       545 -          self.webcam_btn.configure(text="📹
+           -  攝影機")
+       545 +          self.webcam_btn.configure(text="📹
+           +  開啟攝影機")
+       546
+             self.stop_btn.configure(state="disabled")
+       547 +          self.fps_label.configure(text="")
+       548
+       549 -      def update_gui(self, frame, coins):
+       549 +      def update_gui(self, frame, coins
+           +  , fps_text=""):
+       550            """更新 GUI"""
+       551            if self.is_running:
+       552
+             self.display_frame_on_gui(frame)
+       553
+             self.update_detection_results(coins)
+       554 +              if fps_text:
+       555 +
+           + self.fps_label.configure(text=fps_text)
+       556
+       557        def process_results(self, results,
+             frame):
+       558            """處理偵測結果"""
+     ...
+       666
+             info["count"].configure(text=str(count))
+       667                info["subtotal"].configure(text
+             =f"${subtotal}")
+       668
+       669 +              # 高亮有偵測到的硬幣
+       670                if count > 0:
+       671                    info["count"].configure(tex
+             t_color="#00FF7F")
+       672                    info["subtotal"].configure(
+             text_color="#00FF7F")
+       673 +
+           + info["row"].configure(fg_color="#2d4a3e")
+       674                else:
+       675 -
+           -  info["count"].configure(text_color="gray60
+           -  ")
+       676 -
+           -  info["subtotal"].configure(text_color="
+           -  gray60")
+       675 +
+           +  info["count"].configure(text_color="gray50
+           +  ")
+       676 +
+           +  info["subtotal"].configure(text_color="
+           +  gray50")
+       677 +
+           + info["row"].configure(fg_color="gray20")
+       678
+       679                total_coins += count
+       680                total_amount += subtotal
+       681
+       682 -          self.total_count_label.configure(te
+           - xt=f"{total_coins} 枚")
+       682 +          # 更新總計
+       683 +
+           + self.total_count_label.configure(text=f"共
+           + {total_coins} 枚硬幣")
+       684            self.total_label.configure(text=f"$
+             {total_amount}")
+       685
+       686 +          # 更新狀態
+       687            if total_coins > 0:
+       688                self.status_label.configure(
+       689                    text=f"● 偵測中 - 發現
+             {total_coins} 枚硬幣",
+     ...
+       696            if self.cap is not None:
+       697                self.cap.release()
+       698                self.cap = None
+       699 -          self.webcam_btn.configure(text="📹
+           -  攝影機")
+       699 +          self.webcam_btn.configure(text="📹
+           +  開啟攝影機")
+       700
+             self.stop_btn.configure(state="disabled")
+       701            self.status_label.configure(text="●
+              等待偵測...", text_color="gray60")
+       702 +          self.fps_label.configure(text="")
+       703
+       704        def on_closing(self):
+       705            """關閉視窗時的處理"""
+
+● Bash(cd "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY3"
+       && python -m py_compile yolo_gui.py && echo "Syntax OK")
+  ⎿  Syntax OK
+
+● 已重新設計為三欄式布局，Dashboard 在右側不會被影片遮擋。
+
+  新布局結構
+
+  ┌─────────────┬────────────────────────────┬─────────────────┐
+  │             │                            │ 📊 Dashboard    │
+  │ 控制面板     │                            │                 │
+  │ (250px)     │      影像顯示區             │ ┌─────────────┐ │
+  │             │      (自適應大小)           │ │  總金額     │ │
+  │ ┌─────────┐ │                            │ │   $0        │ │
+  │ │模型設定 │ │      支援直式/橫式          │ │  共 0 枚    │ │
+  │ └─────────┘ │      影片自動縮放           │ └─────────────┘ │
+  │ ┌─────────┐ │                            │                 │
+  │ │信心閾值 │ │                            │ 硬幣明細        │
+  │ └─────────┘ │                            │ ● 50元 0×$50=$0│
+  │ ┌─────────┐ │                            │ ● 10元 0×$10=$0│
+  │ │選擇來源 │ │                            │ ● 5元  0×$5=$0 │
+  │ │📷 圖片  │ │                            │ ● 1元  0×$1=$0 │
+  │ │🎬 影片  │ │                            │                 │
+  │ │📹 攝影機│ │                            │ ● 等待偵測...   │
+  │ │⏹ 停止  │ │                            │ FPS: --        │
+  │ └─────────┘ │                            │                 │
+  └─────────────┴────────────────────────────┴─────────────────┘
+          ↑               ↑                         ↑
+      固定寬度         自動擴展                  固定寬度
+       250px          (填滿剩餘)                  280px
+
+  改進項目
+
+  1. 三欄式布局 - Dashboard 獨立在右側，不受影片比例影響
+  2. 總金額置頂 - 最醒目的位置顯示大字總金額
+  3. 硬幣明細 - 顯示 數量 × 單價 = 小計 格式
+  4. 高亮效果 - 偵測到的硬幣整行變綠色
+  5. FPS 顯示 - 即時顯示處理速度
+  6. 視窗尺寸 - 1500x900 (最小 1300x800)
+
+  執行:
+  python yolo_gui.py
+
+> 你有看到DAY4資料夾嗎
+
+● Bash(ls -la "D:\AWORKSPACE\Github\ComputerVisionCourse202512")
+  ⎿  total 15589
+     drwxr-xr-x 1 user 197121       0 十二月 18 09:01 .
+     drwxr-xr-x 1 user 197121       0 十二月 12 13:05 ..
+     … +27 lines (ctrl+o to expand)
+
+● 有的，看到 DAY4 資料夾了。讓我看看裡面的內容。
+
+● Bash(ls -la
+      "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY4")
+  ⎿  total 5
+     drwxr-xr-x 1 user 197121   0 十二月 18 09:01 .
+     drwxr-xr-x 1 user 197121   0 十二月 18 09:01 ..
+     … +2 lines (ctrl+o to expand)
+
+● Read(DAY4\calculator.py)
+  ⎿  Read 17 lines
+
+● 看到了。DAY4 資料夾目前只有一個簡單的 calculator.py 計算機程式。
+
+  DAY4/
+  └── calculator.py   # Python 計算機 (使用 eval 執行運算式)
+
+  你需要我在 DAY4 做什麼嗎？
+
+> 那像我要在Windows跟MacOS打包這個計算機程序
+pyinstaller怎麼用?教我!(不要直接執行，要教我怎麼執行)
+
+● 好的，我來教你如何使用 PyInstaller 打包 Python 程式。
+
+  PyInstaller 打包教學
+
+  1. 安裝 PyInstaller
+
+  pip install pyinstaller
+
+  ---
+  2. 基本打包指令
+
+  # 進入 DAY4 資料夾
+  cd DAY4
+
+  # 最基本的打包 (會產生一個資料夾)
+  pyinstaller calculator.py
+
+  # 打包成單一 .exe 檔案 (推薦)
+  pyinstaller --onefile calculator.py
+
+  # 打包成單一檔案 + 無 console 視窗 (適合 GUI 程式)
+  pyinstaller --onefile --noconsole calculator.py
+
+  ---
+  3. 常用參數說明
+
+  | 參數                           | 說明                         |
+  |--------------------------------|------------------------------|
+  | --onefile 或 -F                | 打包成單一執行檔             |
+  | --onedir 或 -D                 | 打包成資料夾 (預設)          |
+  | --noconsole 或 -w              | 不顯示 console 視窗 (GUI 用) |
+  | --console 或 -c                | 顯示 console 視窗 (預設)     |
+  | --name=名稱 或 -n 名稱         | 指定輸出檔案名稱             |
+  | --icon=圖示.ico 或 -i 圖示.ico | 指定應用程式圖示             |
+  | --add-data "來源;目的"         | 加入額外資料檔案             |
+  | --hidden-import 模組           | 手動加入隱藏的 import        |
+  | --clean                        | 打包前清理暫存檔             |
+
+  ---
+  4. 針對你的 calculator.py 的打包指令
+
+  Windows:
+  cd D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY4
+
+  # 打包成單一 exe，命名為 Calculator
+  pyinstaller --onefile --name=Calculator calculator.py
+
+  MacOS:
+  cd /path/to/DAY4
+
+  # 打包成單一執行檔
+  pyinstaller --onefile --name=Calculator calculator.py
+
+  # 如果要打包成 .app (MacOS 應用程式)
+  pyinstaller --onefile --windowed --name=Calculator calculator.py
+
+  ---
+  5. 輸出結果
+
+  打包完成後，資料夾結構會變成：
+
+  DAY4/
+  ├── calculator.py
+  ├── Calculator.spec      # PyInstaller 設定檔 (可重複使用)
+  ├── build/               # 建置暫存檔 (可刪除)
+  └── dist/                # ← 執行檔在這裡！
+      └── Calculator.exe   # Windows
+      └── Calculator       # MacOS/Linux
+
+  ---
+  6. 進階：使用 .spec 檔案
+
+  第一次打包後會產生 .spec 檔案，之後可以直接用它打包：
+
+  # 使用 spec 檔案打包
+  pyinstaller Calculator.spec
+
+  你也可以編輯 .spec 檔案來做更細緻的設定。
+
+  ---
+  7. 常見問題
+
+  Q: 打包後檔案很大？
+  # 使用 UPX 壓縮 (需先安裝 UPX)
+  pyinstaller --onefile --upx-dir=/path/to/upx calculator.py
+
+  Q: 打包後執行出現 ModuleNotFoundError？
+  # 手動加入缺少的模組
+  pyinstaller --onefile --hidden-import=模組名稱 calculator.py
+
+  Q: 想要加入圖示？
+  # Windows 用 .ico，MacOS 用 .icns
+  pyinstaller --onefile --icon=app_icon.ico calculator.py
+
+  ---
+  8. 跨平台注意事項
+
+  | 平台    | 打包結果       | 注意事項                             |
+  |---------|----------------|--------------------------------------|
+  | Windows | .exe           | 只能在 Windows 上打包 Windows 執行檔 |
+  | MacOS   | 執行檔 或 .app | 只能在 MacOS 上打包 MacOS 執行檔     |
+  | Linux   | 執行檔         | 只能在 Linux 上打包 Linux 執行檔     |
+
+  PyInstaller 無法跨平台打包，你需要在各平台上分別執行打包指令。
+
+  ---
+  9. 完整範例指令
+
+  # Windows 完整範例
+  pyinstaller --onefile --name=Calculator --icon=calc.ico --clean calculator.py
+
+  # MacOS 完整範例 (打包成 .app)
+  pyinstaller --onefile --windowed --name=Calculator --icon=calc.icns --clean calculator.py
+
+  要我幫你在 DAY4 建立一個打包用的腳本或說明文檔嗎？
+
+> (vision)
+D:\AWORKSPACE\Github\ComputerVisionCourse202512>pyinstaller
+--onefile --name=Calculator --icon=calc.ico --clean
+calculator.py
+1440 INFO: PyInstaller: 6.16.0, contrib hooks: 2025.9
+1441 INFO: Python: 3.11.13 (conda)
+1498 INFO: Platform: Windows-10-10.0.22621-SP0
+1498 INFO: Python environment: D:\anaconda3\envs\vision
+ERROR: Script file 'calculator.py' does not exist.
+這些錯誤是什麼?跟我解釋每一個
+
+● 讓我逐行解釋：
+
+  輸出解析
+
+  1440 INFO: PyInstaller: 6.16.0, contrib hooks: 2025.9
+  - 意思: PyInstaller 版本是 6.16.0，contrib hooks 版本是 2025.9
+  - 狀態: ✅ 正常，只是顯示版本資訊
+
+  ---
+  1441 INFO: Python: 3.11.13 (conda)
+  - 意思: 使用的 Python 版本是 3.11.13，來自 conda 環境
+  - 狀態: ✅ 正常
+
+  ---
+  1498 INFO: Platform: Windows-10-10.0.22621-SP0
+  - 意思: 作業系統是 Windows 10 (Build 22621)
+  - 狀態: ✅ 正常
+
+  ---
+  1498 INFO: Python environment: D:\anaconda3\envs\vision
+  - 意思: Python 虛擬環境路徑是 D:\anaconda3\envs\vision
+  - 狀態: ✅ 正常
+
+  ---
+  ERROR: Script file 'calculator.py' does not exist.
+  - 意思: ❌ 找不到 calculator.py 檔案！
+  - 原因: 你在 D:\AWORKSPACE\Github\ComputerVisionCourse202512\ 執行指令，但 calculator.py 在 DAY4\ 資料夾裡
+
+  ---
+  解決方法
+
+  方法 1: 先 cd 進入 DAY4 資料夾
+  cd DAY4
+  pyinstaller --onefile --name=Calculator calculator.py
+
+  方法 2: 使用完整路徑
+  pyinstaller --onefile --name=Calculator DAY4/calculator.py
+
+  方法 3: 指定完整路徑 (絕對路徑)
+  pyinstaller --onefile --name=Calculator "D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY4\calculator.py"
+
+  ---
+  另一個問題：--icon=calc.ico
+
+  你指定了 --icon=calc.ico，但這個圖示檔案也不存在。如果你沒有圖示檔，先移除這個參數：
+
+  cd DAY4
+  pyinstaller --onefile --name=Calculator --clean calculator.py
+
+  等你有 .ico 圖示檔後再加上 --icon 參數。
+
+> 我要建立mediapipe的hand應用
+可以幫我寫一個最簡單的example在DAY4資料夾
+
+● Write(DAY4\hand_tracking.py)
+  ⎿  Wrote 1 lines to DAY4\hand_tracking.py
+     """
+     MediaPipe 手部追蹤範例
+     最簡單的手部偵測與關鍵點繪製
+     使用方式:
+         python hand_tracking.py
+     安裝套件:
+         pip install mediapipe opencv-python
+     """
+
+● 已建立 DAY4/hand_tracking.py。
+
+  使用方式
+
+  1. 安裝套件:
+  pip install mediapipe opencv-python
+
+  2. 執行:
+  cd DAY4
+  python hand_tracking.py
+
+  3. 按 q 退出
+
+  ---
+  程式說明
+
+  手部 21 個關鍵點:
+
+          8   12  16  20
+          |   |   |   |
+      4   7   11  15  19
+      |   |   |   |   |
+      3   6   10  14  18
+      |   |   |   |   |
+      2   5   9   13  17
+       \  |   |   |   /
+        \ |   |   |  /
+          1---+---+
+              |
+              0 (WRIST 手腕)
+
+  | 關鍵點 | 名稱                       |
+  |--------|----------------------------|
+  | 0      | WRIST (手腕)               |
+  | 4      | THUMB_TIP (拇指尖)         |
+  | 8      | INDEX_FINGER_TIP (食指尖)  |
+  | 12     | MIDDLE_FINGER_TIP (中指尖) |
+  | 16     | RING_FINGER_TIP (無名指尖) |
+  | 20     | PINKY_TIP (小指尖)         |
+
+  ---
+  取得關鍵點座標的方式
+
+  # 取得食指尖座標
+  index_tip = hand_landmarks.landmark[mp_hands.HandLandmark.INDEX_FINGER_TIP]
+  x = int(index_tip.x * frame_width)
+  y = int(index_tip.y * frame_height)
+
+  要我再加入更多功能嗎？例如手勢辨識、手指計數等？
+
+> 我想要讓食指8號點，可以拖曳出一個維持兩秒的軌跡之後漸變淡出 幫我呈現這個效果
+
+
+● Write(DAY4\hand_tracking.py)
+  ⎿  Added 81 lines, removed 16 lines
+        1    """
+        2    MediaPipe 手部追蹤範例
+        3 -  最簡單的手部偵測與關鍵點繪製
+        3 +  食指軌跡效果 - 維持 2 秒後漸變淡出
+        4
+        5    使用方式:
+        6        python hand_tracking.py
+        7
+        8    安裝套件:
+        9 -      pip install mediapipe opencv-python
+        9 +      pip install mediapipe opencv-python numpy
+       10    """
+       11
+       12    import cv2
+       13    import mediapipe as mp
+       14 +  import time
+       15 +  import numpy as np
+       16 +  from collections import deque
+       17
+       18
+       19 +  # 軌跡設定
+       20 +  TRAIL_DURATION = 2.0  # 軌跡維持秒數
+       21 +  TRAIL_COLOR = (0, 255, 255)  # 軌跡顏色 (BGR: 黃色)
+       22 +  TRAIL_THICKNESS = 4  # 軌跡粗細
+       23 +
+       24 +
+       25    def main():
+       26        # 初始化 MediaPipe Hands
+       27        mp_hands = mp.solutions.hands
+     ...
+       20
+       21        # 建立手部偵測器
+       22        hands = mp_hands.Hands(
+       23 -          static_image_mode=False,      # False = 影片模式 (更快)
+       24 -          max_num_hands=20,              # 最多偵測 2 隻手
+       25 -          min_detection_confidence=0.5, # 偵測信心閾值
+       26 -          min_tracking_confidence=0.5   # 追蹤信心閾值
+       23 +          static_image_mode=False,
+       24 +          max_num_hands=20,
+       25 +          min_detection_confidence=0.5,
+       26 +          min_tracking_confidence=0.5
+       27        )
+       28
+       29        # 開啟攝影機
+     ...
+       32        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+       33
+       34        print("手部追蹤已啟動，按 'q' 退出")
+       35 +      print("用食指畫出軌跡，軌跡會在 2 秒後漸變淡出")
+       36
+       37 +      # 儲存軌跡點 (x, y, timestamp)
+       38 +      trail_points = deque()
+       39 +
+       40        while cap.isOpened():
+       41            ret, frame = cap.read()
+       42            if not ret:
+     ...
+        40
+        41            # 水平翻轉 (鏡像)
+        42            frame = cv2.flip(frame, 1)
+        43 +          h, w, _ = frame.shape
+        44 +          current_time = time.time()
+        45
+        46 -          # BGR 轉 RGB (MediaPipe 需要 RGB)
+        46 +          # BGR 轉 RGB
+        47            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        48
+        49            # 執行手部偵測
+        50            results = hands.process(rgb_frame)
+        51
+        52 -          # 繪製結果
+        52 +          # 偵測到手時，記錄食指位置
+        53            if results.multi_hand_landmarks:
+        54                for hand_landmarks in
+             results.multi_hand_landmarks:
+        55 -                  # 繪製手部關鍵點與連接線
+        55 +                  # 繪製手部骨架
+        56                    mp_draw.draw_landmarks(
+        57                        frame,
+        58                        hand_landmarks,
+        59                        mp_hands.HAND_CONNECTIONS
+        60                    )
+        61
+        62 -                  # 取得手腕座標 (示範如何取得特定關鍵點)
+        63 -                  h, w, _ = frame.shape
+        64 -                  wrist =
+           - hand_landmarks.landmark[mp_hands.HandLandmark.WRIST]
+        65 -                  cx, cy = int(wrist.x * w), int(wrist.y * h)
+        62 +                  # 取得食指尖 (8號點) 座標
+        63 +                  index_tip = hand_landmarks.landmark[mp_hands.
+           + HandLandmark.INDEX_FINGER_TIP]
+        64 +                  cx = int(index_tip.x * w)
+        65 +                  cy = int(index_tip.y * h)
+        66
+        67 -                  # 在手腕位置畫圓
+        68 -                  cv2.circle(frame, (cx, cy), 10, (0, 255, 0),
+           - -1)
+        67 +                  # 加入軌跡點
+        68 +                  trail_points.append((cx, cy, current_time))
+        69
+        70 +                  # 在食指尖畫一個圓
+        71 +                  cv2.circle(frame, (cx, cy), 12, (0, 255, 0),
+           + -1)
+        72 +
+        73 +          # 移除過期的軌跡點 (超過 TRAIL_DURATION 秒)
+        74 +          while trail_points and (current_time -
+           + trail_points[0][2]) > TRAIL_DURATION:
+        75 +              trail_points.popleft()
+        76 +
+        77 +          # 繪製漸變淡出的軌跡
+        78 +          if len(trail_points) > 1:
+        79 +              # 建立透明圖層
+        80 +              overlay = frame.copy()
+        81 +
+        82 +              points_list = list(trail_points)
+        83 +              for i in range(1, len(points_list)):
+        84 +                  # 計算這個點的存活時間比例 (0 = 剛畫, 1 =
+           + 快消失)
+        85 +                  age = current_time - points_list[i][2]
+        86 +                  age_ratio = age / TRAIL_DURATION  # 0.0 ~ 1.0
+        87 +
+        88 +                  # 計算透明度 (越舊越透明)
+        89 +                  alpha = 1.0 - age_ratio  # 1.0 ~ 0.0
+        90 +
+        91 +                  # 計算顏色強度 (越舊越暗)
+        92 +                  color_intensity = alpha
+        93 +                  color = (
+        94 +                      int(TRAIL_COLOR[0] * color_intensity),
+        95 +                      int(TRAIL_COLOR[1] * color_intensity),
+        96 +                      int(TRAIL_COLOR[2] * color_intensity)
+        97 +                  )
+        98 +
+        99 +                  # 計算線條粗細 (越舊越細)
+       100 +                  thickness = max(1, int(TRAIL_THICKNESS *
+           + alpha))
+       101 +
+       102 +                  # 取得前後兩點
+       103 +                  pt1 = (points_list[i - 1][0], points_list[i -
+           +  1][1])
+       104 +                  pt2 = (points_list[i][0], points_list[i][1])
+       105 +
+       106 +                  # 畫線
+       107 +                  cv2.line(overlay, pt1, pt2, color, thickness)
+       108 +
+       109 +              # 混合圖層
+       110 +              cv2.addWeighted(overlay, 0.8, frame, 0.2, 0,
+           + frame)
+       111 +
+       112 +          # 顯示提示文字
+       113 +          cv2.putText(
+       114 +              frame,
+       115 +              f"Trail points: {len(trail_points)}",
+       116 +              (10, 30),
+       117 +              cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2
+       118 +          )
+       119 +
+       120            # 顯示畫面
+       121 -          cv2.imshow("Hand Tracking", frame)
+       121 +          cv2.imshow("Hand Tracking - Finger Trail", frame)
+       122
+       123            if cv2.waitKey(1) & 0xFF == ord('q'):
+       124                break
+
+● 完成！執行方式：
+
+  cd DAY4
+  python hand_tracking.py
+
+  效果說明
+
+  新的點 ──────────────────────────▶ 舊的點
+    |                                    |
+    ├─ 顏色: 亮黃色                      ├─ 顏色: 暗黃色→黑色
+    ├─ 粗細: 4px                         ├─ 粗細: 1px
+    └─ 時間: 0秒                         └─ 時間: 2秒後消失
+
+  原理
+
+  | 變數         | 說明                              |
+  |--------------|-----------------------------------|
+  | trail_points | 使用 deque 儲存 (x, y, timestamp) |
+  | age_ratio    | 點的年齡比例 (0=新, 1=將消失)     |
+  | alpha        | 透明度 = 1 - age_ratio            |
+  | color        | 顏色強度隨 alpha 遞減             |
+  | thickness    | 線條粗細隨 alpha 遞減             |
+
+  可調整參數 (第 19-22 行)
+
+  TRAIL_DURATION = 2.0      # 軌跡維持秒數
+  TRAIL_COLOR = (0, 255, 255)  # BGR 顏色 (黃色)
+  TRAIL_THICKNESS = 4       # 最大線條粗細
+
+> 我想在畫面中間一個區域框出一個Zone作為辨識區域，當8號點進入之後0.5秒開始記錄
+軌跡 (框的顏色變化) 表示開始記錄 0.8秒後 框的顏色變回去 停止紀錄 並將軌跡
+格式整理
+塞入D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY2\models\mnist_cnn.pth
+這個MNIST模型做手寫字辨識，並將辨識結果依序呈現在畫面左上角 由左至右排列
+
+● 讓我先看一下 MNIST 模型的結構。
+
+● Search(pattern: "DAY2/**/*.py")
+  ⎿  Found 12 files (ctrl+o to expand)
+
+● Read(DAY2\01_MNIST\train.py)
+  ⎿  Read 316 lines
+
+● 了解模型結構了。現在來建立完整的手寫辨識程式。
+
+● Write(DAY4\hand_digit_recognition.py)
+  ⎿  Wrote 1 lines to DAY4\hand_digit_recognition.py
+     """
+     MediaPipe 手部追蹤 + MNIST 手寫數字辨識
+     在辨識區域內用食指畫數字，自動辨識並顯示結果
+     使用方式:
+         python hand_digit_recognition.py
+     流程:
+         1. 食指進入辨識區域
+         2. 0.5 秒後開始記錄軌跡 (框變綠色)
+
+● 完成！執行方式：
+
+  cd DAY4
+  python hand_digit_recognition.py
+
+  操作流程
+
+  ┌────────────────────────────────────────────────────────┐
+  │  Results: 3 7 2                                        │
+  │  ┌───┐ ┌───┐ ┌───┐                                    │
+  │  │ 3 │ │ 7 │ │ 2 │  ← 辨識結果由左至右排列            │
+  │  └───┘ └───┘ └───┘                                    │
+  │                                                        │
+  │            Move finger into zone                       │
+  │           ┌─────────────────────┐                      │
+  │           │                     │                      │
+  │           │    辨識區域          │  ← 白色: 等待中      │
+  │           │    300 x 300        │    黃色: 已進入      │
+  │           │                     │    綠色: 記錄中      │
+  │           └─────────────────────┘                      │
+  │                                                        │
+  │  Press 'c' to clear, 'q' to quit                      │
+  └────────────────────────────────────────────────────────┘
+
+  狀態流程
+
+     食指進入區域              0.5秒後               0.8秒後
+          │                      │                     │
+          ▼                      ▼                     ▼
+     ┌─────────┐            ┌─────────┐           ┌─────────┐
+     │  IDLE   │ ────────▶ │ WAITING │ ───────▶ │RECORDING│ ──────▶ 辨識
+     │  白框   │            │  黃框   │           │  綠框   │
+     └─────────┘            └─────────┘           └─────────┘
+          ▲                      │
+          │    食指離開區域       │
+          └──────────────────────┘
+
+  按鍵
+
+  | 按鍵 | 功能             |
+  |------|------------------|
+  | c    | 清除所有辨識結果 |
+  | q    | 退出程式         |
+
+  設定參數 (可調整)
+
+  ZONE_WIDTH = 300       # 辨識區域寬度
+  ZONE_HEIGHT = 300      # 辨識區域高度
+  ENTER_DELAY = 0.5      # 進入後等待秒數
+  RECORD_DURATION = 0.8  # 記錄持續秒數
+
+> PS D:\AWORKSPACE\Github\ComputerVisionCourse202512> &
+D:/anaconda3/envs/vision/python.exe
+d:/AWORKSPACE/Github/ComputerVisionCourse202512/DAY4/hand_digit_recognition.py
+2025-12-18 11:42:15.749154: I tensorflow/core/util/port.cc:113] oneDNN custom
+operations are on. You may see slightly different numerical results due to
+floating-point round-off errors from different computation orders. To turn
+them off, set the environment variable `TF_ENABLE_ONEDNN_OPTS=0`.
+WARNING:tensorflow:From
+D:\anaconda3\envs\vision\Lib\site-packages\keras\src\losses.py:2976: The name
+tf.losses.sparse_softmax_cross_entropy is deprecated. Please use
+tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+載入 MNIST 模型...
+模型載入成功:
+D:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY2\models\mnist_cnn.pth
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+WARNING: All log messages before absl::InitializeLog() is called are written
+to STDERR
+W0000 00:00:1766029347.221706   26356 inference_feedback_manager.cc:114]
+Feedback manager requires a model with a single signature inference. Disabling
+ support for feedback tensors.
+W0000 00:00:1766029347.243243   26356 inference_feedback_manager.cc:114]
+Feedback manager requires a model with a single signature inference. Disabling
+ support for feedback tensors.
+畫面大小: 1280x720
+辨識區域: (490, 210) - 300x300
+
+操作說明:
+  1. 將食指移入中間的辨識區域
+  2. 等待 0.5 秒 (框變黃色)
+  3. 框變綠色時開始畫數字 (0.8 秒)
+  4. 結果顯示在左上角
+  按 'c' 清除結果，按 'q' 退出
+Traceback (most recent call last):
+  File "d:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY4\hand_digit_recogn
+ition.py", line 407, in <module>
+    main()
+  File "d:\AWORKSPACE\Github\ComputerVisionCourse202512\DAY4\hand_digit_recogn
+ition.py", line 350, in main
+    "waiting": f"Wait... {max(0, ENTER_DELAY - (current_time -
+enter_time)):.1f}s",
+                                                ~~~~~~~~~~~~~^~~~~~~~~~~~
+TypeError: unsupported operand type(s) for -: 'float' and 'NoneType'
+
+● 這個錯誤是因為在 idle 狀態時 enter_time 是 None，但字典會預先計算所有值。讓我修復這個問題。
+
+● Update(DAY4\hand_digit_recognition.py)
+  ⎿  Added 10 lines, removed 6 lines
+       345                    )
+       346
+       347            # 顯示狀態文字
+       348 -          status_text = {
+       349 -              "idle": "Move finger into zone",
+       350 -              "waiting": f"Wait... {max(0, ENTER_DELAY -
+           - (current_time - enter_time)):.1f}s",
+       351 -              "recording": f"Drawing! {max(0, RECORD_DURATION -
+           -  (current_time - record_start_time)):.1f}s"
+       352 -          }
+       348 +          if state == "idle":
+       349 +              status_text = "Move finger into zone"
+       350 +          elif state == "waiting":
+       351 +              remaining = max(0, ENTER_DELAY - (current_time -
+           + enter_time))
+       352 +              status_text = f"Wait... {remaining:.1f}s"
+       353 +          else:  # recording
+       354 +              remaining = max(0, RECORD_DURATION -
+           + (current_time - record_start_time))
+       355 +              status_text = f"Drawing! {remaining:.1f}s"
+       356 +
+       357            cv2.putText(
+       358                frame,
+       359 -              status_text[state],
+       359 +              status_text,
+       360                (zone_x, zone_y - 10),
+       361                cv2.FONT_HERSHEY_SIMPLEX, 0.7, zone_color, 2
+       362            )
+
+● 已修復！問題是 Python 字典會預先計算所有值，即使在 idle 狀態時也會計算 enter_time（此時是 None）。
+
+  現在改成用 if-elif-else 只計算當前狀態需要的文字。
+
+  請重新執行：
+
+  python hand_digit_recognition.py
+
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+>
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  ⏵⏵ bypass permissions on (shift+tab to cycle)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         Context left until auto-compact: 9%
