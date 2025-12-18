@@ -6,19 +6,21 @@
 
 ```
 DAY3/
-├── data.yaml          # 資料集配置檔
-├── train/             # 訓練集 (120 張)
+├── data.yaml            # 資料集配置檔
+├── train/               # 訓練集 (120 張)
 │   ├── images/
 │   └── labels/
-├── valid/             # 驗證集 (6 張)
+├── valid/               # 驗證集 (6 張)
 │   ├── images/
 │   └── labels/
-├── test/              # 測試集 (6 張)
+├── test/                # 測試集 (6 張)
 │   ├── images/
 │   └── labels/
-├── train_yolov11.py   # 訓練腳本
-├── inference.py       # 推理腳本
-└── README.md          # 說明文檔
+├── train_yolov11.py     # 訓練腳本
+├── inference.py         # 命令列推理腳本
+├── yolo_gui.py          # GUI 圖形介面應用
+├── check_environment.py # 環境檢查工具
+└── README.md            # 說明文檔
 ```
 
 ## 類別說明
@@ -38,6 +40,9 @@ pip install ultralytics
 
 # 安裝 OpenCV (推理需要)
 pip install opencv-python
+
+# 安裝 CustomTkinter (GUI 需要)
+pip install customtkinter
 ```
 
 ## 環境檢查
@@ -121,6 +126,31 @@ python inference.py --model runs/detect/coin_detector/weights/best.pt --source v
 # 提高信心閾值 (減少誤判)
 python inference.py --model best.pt --source 0 --conf 0.5
 ```
+
+## GUI 圖形介面
+
+提供現代化的圖形介面，方便操作:
+
+```bash
+python yolo_gui.py
+```
+
+### 功能特色:
+- 選擇並載入 .pt 模型檔案
+- 支援圖片、影片、攝影機三種輸入來源
+- 即時調整信心閾值
+- 自動計算偵測到的硬幣總金額
+- 不同面額硬幣以不同顏色標示
+- 深色主題現代化介面
+
+### 使用步驟:
+1. 點擊「選擇模型檔案」載入訓練好的 .pt 模型
+2. 選擇輸入來源:
+   - 📷 選擇圖片: 偵測單張圖片
+   - 🎬 選擇影片: 偵測影片檔案
+   - 📹 開啟攝影機: 即時攝影機偵測
+3. 調整信心閾值滑桿以優化偵測結果
+4. 查看右側面板的偵測結果與總金額
 
 ## 驗證模型
 
